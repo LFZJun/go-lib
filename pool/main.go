@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"ljun/go-lib/pool/implement"
+	"github.com/LFZJun/go-lib/pool/implement"
 )
 
 func main() {
