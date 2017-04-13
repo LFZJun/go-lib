@@ -5,6 +5,12 @@ import (
 	"time"
 )
 
+type Value struct {
+	V      interface{}
+	Expire time.Duration
+	Done   chan struct{}
+}
+
 type Maps struct {
 	Map   map[string]*Value
 	Mutex sync.RWMutex
@@ -17,16 +23,21 @@ func (m *Maps) tick(key string, value *Value) {
 		delete(m.Map, key)
 		m.Mutex.Unlock()
 	case <-value.Done:
-		return
 	}
 }
 
 func (m *Maps) Set(key string, value interface{}, expire time.Duration) {
 	v := &Value{value, expire, make(chan struct{})}
 	m.Mutex.Lock()
+	vv, ok := m.Map[key]
+	if ok && vv.Expire >= 0 {
+		vv.Done <- struct{}{}
+	}
 	m.Map[key] = v
 	m.Mutex.Unlock()
-	go m.tick(key, v)
+	if v.Expire >= 0 {
+		go m.tick(key, v)
+	}
 
 }
 
@@ -52,12 +63,12 @@ func (m *Maps) Del(key string) error {
 	return nil
 }
 
-type Value struct {
-	V      interface{}
-	Expire time.Duration
-	Done   chan struct{}
+type Cache interface {
+	Set(key string, value interface{}, expire time.Duration)
+	Get(key string) interface{}
+	Del(key string) error
 }
 
-func NewMaps() *Maps {
+func NewCache() Cache {
 	return &Maps{Map: make(map[string]*Value)}
 }

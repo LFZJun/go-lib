@@ -8,12 +8,11 @@ import (
 )
 
 func main() {
-	m := NewMaps()
-	m.Set("name", "ljun", time.Second*4)
-	m.Set("school", "yinshua", time.Second*1)
-	fmt.Println(m.Get("name"), m.Get("school"))
-	time.Sleep(time.Second * 2)
-	fmt.Println(m.Get("name"), m.Get("school"))
-	m.Del("name")
+	m := NewCache()
+	m.Set("name", "ljun", time.Millisecond*500)
+	m.Set("name", "ljun", -1)
+	time.Sleep(time.Second * 1)
+	m.Set("name", "ljun", time.Millisecond*500)
+	time.Sleep(time.Second * 1)
 	fmt.Println(m.Get("name"))
 }
