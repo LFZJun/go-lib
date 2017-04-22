@@ -8,3 +8,5 @@
 1. [缓存](cache/main.go) (生命周期策略用的是多个timer，当缓存数多的时候不太好，可以考虑环形队列)
 1. [连接池](pool/main.go) (不能存map,因为复用的时候不会删除entry)
 1. [分布式锁](lock/main.go) (redis实现)
+1. [环形队列](queue/RingQueue.go)
+1. [ioc](ioc/ioc_test.go)

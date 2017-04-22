@@ -1,8 +1,7 @@
-package main
+package queue
 
 import (
 	"errors"
-	"fmt"
 )
 
 type RingQueue interface {
@@ -53,20 +52,20 @@ func (q *ringQueue) Pop() (interface{}, error) {
 	return x, nil
 }
 
-func main() {
-	s := NewQueue(5)
-	for i := 0; i <= 5; i++ {
-		if err := s.Push(i + 1); err != nil {
-			fmt.Println(err)
-		}
-	}
-	fmt.Println(s)
-	for i := 0; i <= 5; i++ {
-		if value, err := s.Pop(); err != nil {
-			fmt.Println(err)
-		} else {
-			fmt.Println(value)
-		}
-	}
-	fmt.Println(s)
-}
+//func main() {
+//	s := NewQueue(5)
+//	for i := 0; i <= 5; i++ {
+//		if err := s.Push(i + 1); err != nil {
+//			fmt.Println(err)
+//		}
+//	}
+//	fmt.Println(s)
+//	for i := 0; i <= 5; i++ {
+//		if value, err := s.Pop(); err != nil {
+//			fmt.Println(err)
+//		} else {
+//			fmt.Println(value)
+//		}
+//	}
+//	fmt.Println(s)
+//}

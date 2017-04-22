@@ -22,7 +22,7 @@ func (c *connectionPool) size() int {
 	return c.Size
 }
 
-func (c *connectionPool) new() (interface{}, error) {
+func (c *connectionPool) neww() (interface{}, error) {
 	if c.New == nil {
 		return nil, NEWNOIMPLEMENT
 	}
@@ -39,7 +39,7 @@ func (c *connectionPool) isFull() bool {
 
 func (c *connectionPool) Get() interface{} {
 	if c.isEmpty() {
-		n, err := c.new()
+		n, err := c.neww()
 		if err != nil {
 			panic(err)
 		}
