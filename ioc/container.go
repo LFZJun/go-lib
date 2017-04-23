@@ -18,21 +18,43 @@ func NewContainer() *Container {
 	}
 }
 
-func (c *Container) Put(stone Stone) {
+func (c *Container) putStone(stone Stone, name string) {
 	v := reflect.ValueOf(stone)
 	t := v.Type()
-	var name string
 	switch kind := t.Kind(); kind {
 	case reflect.Ptr:
-		name = t.Elem().Name()
+		if name == "" {
+			name = t.Elem().Name()
+		}
 	default:
 		panic(errors.New(fmt.Sprintf("请传入Ptr \n当前类型 %v", kind)))
 	}
 	logger.Printf("放入 %v", name)
+	// 额，没想到并发的场景所以没加锁
 	if _, ok := c.holderMap[name]; !ok {
 		holder := newHolder(stone, t, v, c)
 		c.holderMap[name] = append(c.holderMap[name], holder)
 	}
+}
+
+func (c *Container) Put(stone Stone) {
+	c.putStone(stone, "")
+}
+
+func (c *Container) PutWithName(stone Stone, name string) {
+	c.putStone(stone, name)
+}
+
+func (c *Container) GetStoneWithName(name string) Stone {
+	if hs, ok := c.holderMap[name]; ok {
+		switch len(hs) {
+		case 0:
+			return nil
+		default:
+			return hs[0].Stone
+		}
+	}
+	return nil
 }
 
 func (c *Container) GetHolder(name string, t reflect.Type) (h *Holder) {

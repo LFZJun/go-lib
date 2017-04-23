@@ -20,11 +20,11 @@ func (b *Bar) Ready() {
 }
 
 type Foo struct {
-	Name *Bar `ioc:"*"`
-	Sex  string
+	Name  *Bar `ioc:"*"`
+	Sex   string
 }
 
-func TestIoc(t *testing.T) {
+func TestPut(t *testing.T) {
 	Put(&Bar{
 		Value: "dc",
 	})
@@ -32,4 +32,5 @@ func TestIoc(t *testing.T) {
 	Put(foo)
 	Start()
 	spew.Dump(foo)
+	spew.Dump(GetStoneWithName("Bar"))
 }
