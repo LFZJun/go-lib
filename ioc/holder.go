@@ -3,12 +3,11 @@ package ioc
 import (
 	"fmt"
 	"reflect"
-
 )
 
 type Holder struct {
 	Stone      Stone
-	Class      reflect.Type // class.kind() Ptr
+	Class      reflect.Type  // class.kind() Ptr
 	Value      reflect.Value // value.kind() Ptr
 	Parent     *Container
 	Dependents []*Holder
@@ -53,5 +52,31 @@ func (h *Holder) genDependents() {
 		}
 		h.Dependents = append(h.Dependents, holder)
 		value.Set(holder.Value)
+	}
+}
+
+func (h *Holder) init(set HolderSet) {
+	if _, has := set[h]; has {
+		return
+	}
+	set[h] = struct{}{}
+	for _, dependence := range h.Dependents {
+		dependence.init(set)
+	}
+	if init, ok := h.Stone.(Init); ok {
+		init.Init()
+	}
+}
+
+func (h *Holder) ready(set HolderSet) {
+	if _, has := set[h]; has {
+		return
+	}
+	set[h] = struct{}{}
+	for _, dependence := range h.Dependents {
+		dependence.ready(set)
+	}
+	if init, ok := h.Stone.(Ready); ok {
+		init.Ready()
 	}
 }

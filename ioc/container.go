@@ -28,7 +28,6 @@ func (c *Container) Put(stone Stone) {
 	default:
 		panic(errors.New(fmt.Sprintf("请传入Ptr \n当前类型 %v", kind)))
 	}
-	//name = strings.ToLower(name[:1]) + name[1:]
 	logger.Printf("放入 %v", name)
 	if _, ok := c.holderMap[name]; !ok {
 		holder := newHolder(stone, t, v, c)
@@ -72,10 +71,10 @@ func (c *Container) putDelayFields(d *delayField) {
 	c.delayFields[prefix] = append(c.delayFields[prefix], d)
 }
 
-func (c *Container) eachHolder(funcc func(holder *Holder)) {
+func (c *Container) eachHolder(holderFunc HolderFunc) {
 	for _, v := range c.holderMap {
 		for _, vv := range v {
-			funcc(vv)
+			holderFunc(vv)
 		}
 	}
 }
@@ -88,4 +87,20 @@ func (c *Container) genDependents() {
 
 func (c *Container) Start() {
 	c.genDependents()
+	c.init()
+	c.ready()
+}
+
+func (c *Container) init() {
+	set := make(HolderSet)
+	c.eachHolder(func(holder *Holder) {
+		holder.init(set)
+	})
+}
+
+func (c *Container) ready() {
+	set := make(HolderSet)
+	c.eachHolder(func(holder *Holder) {
+		holder.ready(set)
+	})
 }
