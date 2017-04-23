@@ -38,26 +38,9 @@ func (c *Container) Put(stone Stone) {
 func (c *Container) GetHolder(name string, t reflect.Type) (h *Holder) {
 	if holder, found := c.holderMap[name]; found {
 		for _, h := range holder {
-			if stone := c.findStone(h, t); stone != nil {
+			if stone := h.equal(t); stone != nil {
 				return h
 			}
-		}
-	}
-	return nil
-}
-
-func (c *Container) findStone(h *Holder, t reflect.Type) Stone {
-	switch t.Kind() {
-	case reflect.Interface:
-		if h.Class.Implements(t) {
-			return h.Stone
-		}
-	case reflect.Struct:
-		t = reflect.PtrTo(t)
-		fallthrough
-	case reflect.Ptr:
-		if h.Class.AssignableTo(t) && h.Class.ConvertibleTo(t) {
-			return h.Stone
 		}
 	}
 	return nil

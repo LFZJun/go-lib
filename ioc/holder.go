@@ -23,6 +23,23 @@ func newHolder(stone Stone, typee reflect.Type, value reflect.Value, container *
 	}
 }
 
+func (h *Holder) equal(t reflect.Type) Stone {
+	switch t.Kind() {
+	case reflect.Interface:
+		if h.Class.Implements(t) {
+			return h.Stone
+		}
+	case reflect.Struct:
+		t = reflect.PtrTo(t)
+		fallthrough
+	case reflect.Ptr:
+		if h.Class.AssignableTo(t) && h.Class.ConvertibleTo(t) {
+			return h.Stone
+		}
+	}
+	return nil
+}
+
 func (h *Holder) genDependents() {
 	classElem := h.Class.Elem()
 	valueElem := h.Value.Elem()
