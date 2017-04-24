@@ -14,34 +14,29 @@ type fieldOption struct {
 	path      string
 }
 
-type delayField struct {
-	class       reflect.StructField
-	value       reflect.Value
-	fieldOption *fieldOption
-	parent      *Holder
-}
-
-func buildFieldOptions(tag string, class reflect.StructField) *fieldOption {
+func buildFieldOptions(tagIoc string, class reflect.StructField) *fieldOption {
 	to := &fieldOption{}
-	dotIndex := strings.Index(tag, ".")
+	dotIndex := strings.Index(tagIoc, ".")
 	switch {
-	case dotIndex > 0:
-		to.prefix = tag[:dotIndex]
-		to.path = tag[dotIndex+1:]
-		return to
 	case dotIndex == 0:
 		panic(fmt.Sprintf("错误field: %v %v `%v`  . 不能放在首位", class.Name, class.Type, class.Tag))
+	case dotIndex == len(tagIoc) - 1:
+		panic(fmt.Sprintf("错误field: %v %v `%v`  . 不能放在末尾", class.Name, class.Type, class.Tag))
+	case dotIndex > 0:
+		to.prefix = tagIoc[:dotIndex]
+		to.path = tagIoc[dotIndex+1:]
+		return to
 	}
 	if class.Type.Kind() != reflect.Ptr {
 		panic(fmt.Sprintf("错误field: %v %v `%v` 类型必须是Ptr", class.Name, class.Type, class.Tag))
 	}
-	if tag == "*" {
+	if tagIoc == "*" {
 		to.auto = true
 		to.dependent = true
 		to.name = class.Type.Elem().Name()
 		return to
 	}
 	to.dependent = true
-	to.name = tag
+	to.name = tagIoc
 	return to
 }

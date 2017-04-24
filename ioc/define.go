@@ -1,5 +1,5 @@
 package ioc
 
-type HolderFunc func(holder *Holder)
+type HolderFunc func(holder *holder)
 
-type HolderSet map[*Holder]struct{}
+type HolderSet map[*holder]struct{}

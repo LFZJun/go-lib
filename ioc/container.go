@@ -4,21 +4,39 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"sort"
 )
 
-type Container struct {
-	holderMap   map[string][]*Holder
-	delayFields map[string][]*delayField
+type Container interface {
+	Put(stone Stone)
+	PutWithName(stone Stone, name string)
+	GetHolder(name string, t reflect.Type) (h *holder)
+	Start()
 }
 
-func NewContainer() *Container {
-	return &Container{
-		holderMap:   make(map[string][]*Holder),
-		delayFields: make(map[string][]*delayField),
+type container struct {
+	holderMap map[string][]*holder
+	fields    map[string][]*field
+	plugins   map[Lifecycle]plugins
+}
+
+func NewContainer() *container {
+	return &container{
+		holderMap: make(map[string][]*holder),
+		fields:    make(map[string][]*field),
+		plugins:   make(map[Lifecycle]plugins),
 	}
 }
 
-func (c *Container) putStone(stone Stone, name string) {
+func (c *container) registerPlugin(lifecycle Lifecycle, p Plugin) {
+	if _, ok := c.plugins[lifecycle]; !ok {
+		c.plugins[lifecycle] = []Plugin{}
+	}
+	c.plugins[lifecycle] = append(c.plugins[lifecycle], p)
+
+}
+
+func (c *container) putStone(stone Stone, name string) {
 	v := reflect.ValueOf(stone)
 	t := v.Type()
 	switch kind := t.Kind(); kind {
@@ -37,15 +55,15 @@ func (c *Container) putStone(stone Stone, name string) {
 	}
 }
 
-func (c *Container) Put(stone Stone) {
+func (c *container) Put(stone Stone) {
 	c.putStone(stone, "")
 }
 
-func (c *Container) PutWithName(stone Stone, name string) {
+func (c *container) PutWithName(stone Stone, name string) {
 	c.putStone(stone, name)
 }
 
-func (c *Container) GetStoneWithName(name string) Stone {
+func (c *container) GetStoneWithName(name string) Stone {
 	if hs, ok := c.holderMap[name]; ok {
 		switch len(hs) {
 		case 0:
@@ -57,10 +75,10 @@ func (c *Container) GetStoneWithName(name string) Stone {
 	return nil
 }
 
-func (c *Container) GetHolder(name string, t reflect.Type) (h *Holder) {
+func (c *container) GetHolder(name string, t reflect.Type) (h *holder) {
 	if holder, found := c.holderMap[name]; found {
 		for _, h := range holder {
-			if stone := h.equal(t); stone != nil {
+			if h.Equal(t) {
 				return h
 			}
 		}
@@ -68,15 +86,15 @@ func (c *Container) GetHolder(name string, t reflect.Type) (h *Holder) {
 	return nil
 }
 
-func (c *Container) putDelayFields(d *delayField) {
+func (c *container) putField(d *field) {
 	prefix := d.fieldOption.prefix
-	if _, has := c.delayFields[prefix]; !has {
-		c.delayFields[prefix] = []*delayField{}
+	if _, has := c.fields[prefix]; !has {
+		c.fields[prefix] = []*field{}
 	}
-	c.delayFields[prefix] = append(c.delayFields[prefix], d)
+	c.fields[prefix] = append(c.fields[prefix], d)
 }
 
-func (c *Container) eachHolder(holderFunc HolderFunc) {
+func (c *container) eachHolder(holderFunc HolderFunc) {
 	for _, v := range c.holderMap {
 		for _, vv := range v {
 			holderFunc(vv)
@@ -84,28 +102,47 @@ func (c *Container) eachHolder(holderFunc HolderFunc) {
 	}
 }
 
-func (c *Container) genDependents() {
-	c.eachHolder(func(holder *Holder) {
+func (c *container) genDependents() {
+	c.eachHolder(func(holder *holder) {
 		holder.genDependents()
 	})
 }
 
-func (c *Container) Start() {
+func (c *container) loadPlugins(lifecycle Lifecycle) {
+	ps, ok := c.plugins[lifecycle]
+	if !ok || len(ps) == 0 {
+		return
+	}
+	sort.Sort(ps)
+	for _, p := range ps {
+		fs, ok := c.fields[p.Prefix()]
+		if !ok {
+			return
+		}
+		for _, f := range fs {
+			f.loadPlugin(p)
+		}
+	}
+}
+
+func (c *container) Start() {
 	c.genDependents()
+	c.loadPlugins(BeforeInit)
 	c.init()
+	c.loadPlugins(BeforeReady)
 	c.ready()
 }
 
-func (c *Container) init() {
+func (c *container) init() {
 	set := make(HolderSet)
-	c.eachHolder(func(holder *Holder) {
+	c.eachHolder(func(holder *holder) {
 		holder.init(set)
 	})
 }
 
-func (c *Container) ready() {
+func (c *container) ready() {
 	set := make(HolderSet)
-	c.eachHolder(func(holder *Holder) {
+	c.eachHolder(func(holder *holder) {
 		holder.ready(set)
 	})
 }

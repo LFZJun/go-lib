@@ -12,7 +12,7 @@ func Put(stone Stone) {
 	defaultContainer.Put(stone)
 }
 
-func PutWithName(stone Stone, name string)  {
+func PutWithName(stone Stone, name string) {
 	defaultContainer.PutWithName(stone, name)
 }
 
@@ -20,6 +20,10 @@ func GetStoneWithName(name string) Stone {
 	return defaultContainer.GetStoneWithName(name)
 }
 
-func Start()  {
+func RegisterPlugin(lifecycle Lifecycle, p Plugin) {
+	defaultContainer.registerPlugin(lifecycle, p)
+}
+
+func Start() {
 	defaultContainer.Start()
 }

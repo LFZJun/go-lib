@@ -1,27 +1,16 @@
 package ioc
 
 import (
-	"fmt"
 	"testing"
-	"github.com/davecgh/go-spew/spew"
 )
 
 type Bar struct {
 	Value string
 }
-
-func (b *Bar) Init() {
-	fmt.Println(1)
-	b.Value = "yb"
-}
-
-func (b *Bar) Ready() {
-	fmt.Println(2)
-}
-
 type Foo struct {
 	Name  *Bar `ioc:"*"`
-	Sex   string
+	Name1 *Bar `ioc:"a.b"`
+ 	Sex   string
 }
 
 func TestPut(t *testing.T) {
@@ -31,6 +20,6 @@ func TestPut(t *testing.T) {
 	foo := new(Foo)
 	Put(foo)
 	Start()
-	spew.Dump(foo)
-	spew.Dump(GetStoneWithName("Bar"))
+	//spew.Dump(foo)
+	//spew.Dump(GetStoneWithName("Bar"))
 }

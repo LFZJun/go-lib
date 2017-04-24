@@ -5,65 +5,72 @@ import (
 	"reflect"
 )
 
-type Holder struct {
-	Stone      Stone
-	Class      reflect.Type  // class.kind() Ptr
-	Value      reflect.Value // value.kind() Ptr
-	Parent     *Container
-	Dependents []*Holder
+type Holder interface {
+	Equal(t reflect.Type) Stone
+	genDependents()
+	init()
+	ready()
 }
 
-func newHolder(stone Stone, typee reflect.Type, value reflect.Value, container *Container) *Holder {
-	return &Holder{
+type holder struct {
+	Stone      Stone
+	Class      reflect.Type  // structField.kind() Ptr
+	Value      reflect.Value // value.kind() Ptr
+	Parent     *container
+	Dependents []*holder
+}
+
+func newHolder(stone Stone, typee reflect.Type, value reflect.Value, container *container) *holder {
+	return &holder{
 		Stone:      stone,
 		Class:      typee,
 		Value:      value,
 		Parent:     container,
-		Dependents: []*Holder{},
+		Dependents: []*holder{},
 	}
 }
 
-func (h *Holder) equal(t reflect.Type) Stone {
+func (h *holder) Equal(t reflect.Type) bool {
 	switch t.Kind() {
 	case reflect.Interface:
 		if h.Class.Implements(t) {
-			return h.Stone
+			return true
 		}
 	case reflect.Struct:
 		t = reflect.PtrTo(t)
 		fallthrough
 	case reflect.Ptr:
 		if h.Class.AssignableTo(t) && h.Class.ConvertibleTo(t) {
-			return h.Stone
+			return true
 		}
 	}
-	return nil
+	return false
 }
 
-func (h *Holder) genDependents() {
+func (h *holder) genDependents() {
 	classElem := h.Class.Elem()
 	valueElem := h.Value.Elem()
 	for num := valueElem.NumField() - 1; num >= 0; num-- {
-		class := classElem.Field(num)
+		structField := classElem.Field(num)
 		value := valueElem.Field(num)
-		tag, ok := class.Tag.Lookup("ioc")
+		tag, ok := structField.Tag.Lookup("ioc")
 		if !ok || tag == "-" {
 			continue
 		}
 		if !value.CanSet() {
-			panic(fmt.Sprintf("不能修改 %v", class))
+			panic(fmt.Sprintf("%v: %v %v %v 需要大写变量首字母 mustBeExported", structField.PkgPath, structField.Name, structField.Type, structField.Tag))
 		}
-		field := buildFieldOptions(tag, class)
-		if !field.dependent {
-			h.Parent.putDelayFields(&delayField{
-				class:       class,
+		fileOption := buildFieldOptions(tag, structField)
+		if !fileOption.dependent {
+			h.Parent.putField(&field{
+				structField: structField,
 				value:       value,
-				fieldOption: field,
+				fieldOption: fileOption,
 				parent:      h,
 			})
 			return
 		}
-		holder := h.Parent.GetHolder(field.name, value.Type())
+		holder := h.Parent.GetHolder(fileOption.name, value.Type())
 		if holder == nil {
 			panic(fmt.Sprintf("找不到 %v", value.Type()))
 		}
@@ -72,7 +79,7 @@ func (h *Holder) genDependents() {
 	}
 }
 
-func (h *Holder) init(set HolderSet) {
+func (h *holder) init(set HolderSet) {
 	if _, has := set[h]; has {
 		return
 	}
@@ -85,7 +92,7 @@ func (h *Holder) init(set HolderSet) {
 	}
 }
 
-func (h *Holder) ready(set HolderSet) {
+func (h *holder) ready(set HolderSet) {
 	if _, has := set[h]; has {
 		return
 	}
