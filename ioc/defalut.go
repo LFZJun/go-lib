@@ -21,7 +21,7 @@ func GetStoneWithName(name string) Stone {
 }
 
 func RegisterPlugin(lifecycle Lifecycle, p Plugin) {
-	defaultContainer.registerPlugin(lifecycle, p)
+	defaultContainer.RegisterPlugin(lifecycle, p)
 }
 
 func Start() {

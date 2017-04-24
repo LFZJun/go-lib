@@ -1,32 +1,17 @@
 package ioc
 
 import (
-	"fmt"
 	"testing"
+	"github.com/davecgh/go-spew/spew"
 )
 
-type TestPl struct {
-}
-
-func (p *TestPl) Value(path string) interface{} {
-	return "a"
-}
-
-func (p *TestPl) Prefix() string {
-	return "#"
-}
-
-func (p *TestPl) Priority() int {
-	return 0
-}
-
 type Foo1 struct {
-	Name string `ioc:"#.name"`
+	A string `ioc:"#.abc"`
 }
 
 func TestPlugin(t *testing.T) {
-	RegisterPlugin(BeforeInit, new(TestPl))
+	TomlLoad(`abc="1"`)
 	Put(new(Foo1))
 	Start()
-	fmt.Println(GetStoneWithName("Foo1"))
+	spew.Dump(GetStoneWithName("Foo1"))
 }

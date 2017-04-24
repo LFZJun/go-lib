@@ -5,32 +5,25 @@ import (
 	"reflect"
 )
 
-type Holder interface {
-	Equal(t reflect.Type) Stone
-	genDependents()
-	init()
-	ready()
-}
-
-type holder struct {
+type Holder struct {
 	Stone      Stone
 	Class      reflect.Type  // structField.kind() Ptr
 	Value      reflect.Value // value.kind() Ptr
-	Parent     *container
-	Dependents []*holder
+	Parent     Container
+	Dependents []*Holder
 }
 
-func newHolder(stone Stone, typee reflect.Type, value reflect.Value, container *container) *holder {
-	return &holder{
+func newHolder(stone Stone, typee reflect.Type, value reflect.Value, container *container) *Holder {
+	return &Holder{
 		Stone:      stone,
 		Class:      typee,
 		Value:      value,
 		Parent:     container,
-		Dependents: []*holder{},
+		Dependents: []*Holder{},
 	}
 }
 
-func (h *holder) Equal(t reflect.Type) bool {
+func (h *Holder) Equal(t reflect.Type) bool {
 	switch t.Kind() {
 	case reflect.Interface:
 		if h.Class.Implements(t) {
@@ -47,7 +40,7 @@ func (h *holder) Equal(t reflect.Type) bool {
 	return false
 }
 
-func (h *holder) genDependents() {
+func (h *Holder) genDependents() {
 	classElem := h.Class.Elem()
 	valueElem := h.Value.Elem()
 	for num := valueElem.NumField() - 1; num >= 0; num-- {
@@ -79,7 +72,7 @@ func (h *holder) genDependents() {
 	}
 }
 
-func (h *holder) init(set HolderSet) {
+func (h *Holder) init(set HolderSet) {
 	if _, has := set[h]; has {
 		return
 	}
@@ -92,7 +85,7 @@ func (h *holder) init(set HolderSet) {
 	}
 }
 
-func (h *holder) ready(set HolderSet) {
+func (h *Holder) ready(set HolderSet) {
 	if _, has := set[h]; has {
 		return
 	}

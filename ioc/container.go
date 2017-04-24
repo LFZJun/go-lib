@@ -7,28 +7,31 @@ import (
 	"sort"
 )
 
-type Container interface {
-	Put(stone Stone)
-	PutWithName(stone Stone, name string)
-	GetHolder(name string, t reflect.Type) (h *holder)
-	Start()
-}
-
-type container struct {
-	holderMap map[string][]*holder
-	fields    map[string][]*field
-	plugins   map[Lifecycle]plugins
-}
-
-func NewContainer() *container {
+func NewContainer() Container {
 	return &container{
-		holderMap: make(map[string][]*holder),
+		holderMap: make(map[string][]*Holder),
 		fields:    make(map[string][]*field),
 		plugins:   make(map[Lifecycle]plugins),
 	}
 }
 
-func (c *container) registerPlugin(lifecycle Lifecycle, p Plugin) {
+type Container interface {
+	RegisterPlugin(lifecycle Lifecycle, p Plugin)
+	Put(stone Stone)
+	PutWithName(stone Stone, name string)
+	GetHolder(name string, t reflect.Type) (h *Holder)
+	GetStoneWithName(name string) Stone
+	Start()
+	putField(d *field)
+}
+
+type container struct {
+	holderMap map[string][]*Holder
+	fields    map[string][]*field
+	plugins   map[Lifecycle]plugins
+}
+
+func (c *container) RegisterPlugin(lifecycle Lifecycle, p Plugin) {
 	if _, ok := c.plugins[lifecycle]; !ok {
 		c.plugins[lifecycle] = []Plugin{}
 	}
@@ -75,7 +78,7 @@ func (c *container) GetStoneWithName(name string) Stone {
 	return nil
 }
 
-func (c *container) GetHolder(name string, t reflect.Type) (h *holder) {
+func (c *container) GetHolder(name string, t reflect.Type) (h *Holder) {
 	if holder, found := c.holderMap[name]; found {
 		for _, h := range holder {
 			if h.Equal(t) {
@@ -103,7 +106,7 @@ func (c *container) eachHolder(holderFunc HolderFunc) {
 }
 
 func (c *container) genDependents() {
-	c.eachHolder(func(holder *holder) {
+	c.eachHolder(func(holder *Holder) {
 		holder.genDependents()
 	})
 }
@@ -135,14 +138,14 @@ func (c *container) Start() {
 
 func (c *container) init() {
 	set := make(HolderSet)
-	c.eachHolder(func(holder *holder) {
+	c.eachHolder(func(holder *Holder) {
 		holder.init(set)
 	})
 }
 
 func (c *container) ready() {
 	set := make(HolderSet)
-	c.eachHolder(func(holder *holder) {
+	c.eachHolder(func(holder *Holder) {
 		holder.ready(set)
 	})
 }

@@ -8,7 +8,7 @@ type field struct {
 	structField reflect.StructField
 	value       reflect.Value
 	fieldOption *fieldOption
-	parent      *holder
+	parent      *Holder
 }
 
 func (f *field) loadPlugin(p Plugin) {
