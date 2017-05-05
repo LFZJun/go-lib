@@ -1,15 +1,8 @@
-package tag
+package parser
 
 import (
 	"strconv"
-
-	"github.com/davecgh/go-spew/spew"
 )
-
-func main() {
-	var tag StructTag = `json:"a" db:"n"`
-	spew.Dump(tag.Parse())
-}
 
 type StructTag string
 
