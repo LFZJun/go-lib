@@ -6,8 +6,13 @@ import (
 	"github.com/pelletier/go-toml"
 )
 
-func init() {
-	RegisterPlugin(BeforeInit, tomlPlugin)
+var load = false
+
+func tomlLoad() {
+	if !load {
+		RegisterPlugin(BeforeInit, tomlPlugin)
+		load = true
+	}
 }
 
 var tomlPlugin = new(iocToml)
@@ -31,6 +36,7 @@ func (i *iocToml) Priority() int {
 }
 
 func TomlLoad(content string) error {
+	tomlLoad()
 	tree, err := toml.Load(content)
 	if err != nil {
 		return err
@@ -40,6 +46,7 @@ func TomlLoad(content string) error {
 }
 
 func TomlLoadFile(path string) error {
+	tomlLoad()
 	tree, err := toml.LoadFile(path)
 	if err != nil {
 		return err
@@ -49,6 +56,7 @@ func TomlLoadFile(path string) error {
 }
 
 func TomlLoadReader(reader io.Reader) error {
+	tomlLoad()
 	tree, err := toml.LoadReader(reader)
 	if err != nil {
 		return err
