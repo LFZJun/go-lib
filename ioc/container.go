@@ -1,8 +1,6 @@
 package ioc
 
 import (
-	"errors"
-	"fmt"
 	"reflect"
 	"sort"
 )
@@ -36,7 +34,6 @@ func (c *container) RegisterPlugin(lifecycle Lifecycle, p Plugin) {
 		c.plugins[lifecycle] = []Plugin{}
 	}
 	c.plugins[lifecycle] = append(c.plugins[lifecycle], p)
-
 }
 
 func (c *container) putStone(stone Stone, name string) {
@@ -48,7 +45,7 @@ func (c *container) putStone(stone Stone, name string) {
 			name = t.Elem().Name()
 		}
 	default:
-		panic(errors.New(fmt.Sprintf("请传入Ptr \n当前类型 %v", kind)))
+		panic(ErrorPtr.Panic(kind))
 	}
 	logger.Printf("放入 %v", name)
 	// 额，没想到并发的场景所以没加锁
