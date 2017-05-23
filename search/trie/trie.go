@@ -44,17 +44,17 @@ func (t *Trie) Root() *Node {
 func (t *Trie) Add(key string, meta interface{}) *Node {
 	t.size++
 	runes := []rune(key)
-	bitmask := maskruneslice(runes)
+	bitMask := maskRuneSlice(runes)
 	node := t.root
-	node.mask |= bitmask
+	node.mask |= bitMask
 	for i := range runes {
 		r := runes[i]
-		bitmask = maskruneslice(runes[i:])
+		bitMask = maskRuneSlice(runes[i:])
 		if n, ok := node.children[r]; ok {
 			node = n
-			node.mask |= bitmask
+			node.mask |= bitMask
 		} else {
-			node = node.NewChild(r, bitmask, nil, false)
+			node = node.NewChild(r, bitMask, nil, false)
 		}
 	}
 	node = node.NewChild(nul, 0, meta, true)
@@ -109,7 +109,7 @@ func (t *Trie) Keys() []string {
 
 // Performs a fuzzy search against the keys in the trie.
 func (t Trie) FuzzySearch(pre string) []string {
-	keys := fuzzycollect(t.Root(), []rune(pre))
+	keys := fuzzyCollect(t.Root(), []rune(pre))
 	sort.Sort(ByKeys(keys))
 	return keys
 }
@@ -190,17 +190,17 @@ func findNode(node *Node, runes []rune) *Node {
 		return nil
 	}
 
-	var nrunes []rune
+	var nRunes []rune
 	if len(runes) > 1 {
-		nrunes = runes[1:]
+		nRunes = runes[1:]
 	} else {
-		nrunes = runes[0:0]
+		nRunes = runes[0:0]
 	}
 
-	return findNode(n, nrunes)
+	return findNode(n, nRunes)
 }
 
-func maskruneslice(rs []rune) uint64 {
+func maskRuneSlice(rs []rune) uint64 {
 	var m uint64
 	for _, r := range rs {
 		m |= uint64(1) << uint64(r-'a')
@@ -238,7 +238,7 @@ type potentialSubtree struct {
 	node *Node
 }
 
-func fuzzycollect(node *Node, partial []rune) []string {
+func fuzzyCollect(node *Node, partial []rune) []string {
 	var (
 		m    uint64
 		i    int
@@ -246,12 +246,12 @@ func fuzzycollect(node *Node, partial []rune) []string {
 		keys []string
 	)
 
-	potential := []potentialSubtree{potentialSubtree{node: node, idx: 0}}
+	potential := []potentialSubtree{{node: node, idx: 0}}
 	for l := len(potential); l > 0; l = len(potential) {
 		i = l - 1
 		p = potential[i]
 		potential = potential[:i]
-		m = maskruneslice(partial[p.idx:])
+		m = maskRuneSlice(partial[p.idx:])
 		if (p.node.mask & m) != m {
 			continue
 		}
