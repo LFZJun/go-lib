@@ -1,7 +1,6 @@
 package ioc
 
 import (
-	"fmt"
 	"reflect"
 	"strings"
 )
@@ -19,16 +18,16 @@ func buildFieldOptions(tagIoc string, class reflect.StructField) *fieldOption {
 	dotIndex := strings.Index(tagIoc, ".")
 	switch {
 	case dotIndex == 0:
-		panic(fmt.Sprintf("错误field: %v %v `%v`  . 不能放在首位", class.Name, class.Type, class.Tag))
-	case dotIndex == len(tagIoc) - 1:
-		panic(fmt.Sprintf("错误field: %v %v `%v`  . 不能放在末尾", class.Name, class.Type, class.Tag))
+		panic(ErrorTagDotIndex.Panic(class.Name, class.Type, class.Tag, ". 不能放在首位"))
+	case dotIndex == len(tagIoc)-1:
+		panic(ErrorTagDotIndex.Panic(class.Name, class.Type, class.Tag, ". 不能放在末尾"))
 	case dotIndex > 0:
 		to.prefix = tagIoc[:dotIndex]
 		to.path = tagIoc[dotIndex+1:]
 		return to
 	}
 	if class.Type.Kind() != reflect.Ptr {
-		panic(fmt.Sprintf("错误field: %v %v `%v` 类型必须是Ptr", class.Name, class.Type, class.Tag))
+		panic(ErrorTagPtr.Panic(class.Name, class.Type, class.Tag))
 	}
 	if tagIoc == "*" {
 		to.auto = true

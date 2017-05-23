@@ -1,7 +1,6 @@
 package ioc
 
 import (
-	"fmt"
 	"reflect"
 )
 
@@ -51,7 +50,7 @@ func (h *Holder) genDependents() {
 			continue
 		}
 		if !value.CanSet() {
-			panic(fmt.Sprintf("%v: %v %v %v 需要大写变量首字母 mustBeExported", structField.PkgPath, structField.Name, structField.Type, structField.Tag))
+			panic(ErrorUnexported.Panic(structField.PkgPath, structField.Name, structField.Type, structField.Tag))
 		}
 		fileOption := buildFieldOptions(tag, structField)
 		if !fileOption.dependent {
@@ -65,7 +64,7 @@ func (h *Holder) genDependents() {
 		}
 		holder := h.Parent.GetHolder(fileOption.name, value.Type())
 		if holder == nil {
-			panic(fmt.Sprintf("找不到 %v", value.Type()))
+			panic(ErrorMissing.Panic(value.Type()))
 		}
 		h.Dependents = append(h.Dependents, holder)
 		value.Set(holder.Value)

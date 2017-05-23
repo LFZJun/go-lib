@@ -22,7 +22,7 @@ type iocToml toml.TomlTree
 func (i *iocToml) Value(path string) interface{} {
 	v := (*toml.TomlTree)(i).Get(path)
 	if v == nil {
-		panic("找不到值: " + path)
+		panic(ErrorMissing.Panic(path))
 	}
 	return v
 }
