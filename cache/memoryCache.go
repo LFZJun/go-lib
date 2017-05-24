@@ -25,9 +25,7 @@ type Maps struct {
 func (m *Maps) tick(key string, value *Value) {
 	select {
 	case <-time.After(value.expire):
-		m.Mutex.Lock()
-		delete(m.Map, key)
-		m.Mutex.Unlock()
+		m.Del(key)
 	case <-value.done:
 	}
 }
@@ -37,7 +35,7 @@ func (m *Maps) Set(key string, value interface{}, expire time.Duration) {
 	switch {
 	case expire >= 0:
 		v = &Value{value, expire, make(chan struct{})}
-		defer func() {go m.tick(key, v)}()
+		defer func() { go m.tick(key, v) }()
 	default:
 		v = &Value{value, expire, nil}
 	}
@@ -58,20 +56,16 @@ func (m *Maps) Get(key string) interface{} {
 	return nil
 }
 
-func (m *Maps) Del(key string) error {
+func (m *Maps) Del(key string) {
 	m.Mutex.Lock()
-	defer m.Mutex.Unlock()
-	if v, ok := m.Map[key]; ok {
-		v.CancelDel()
-		delete(m.Map, key)
-	}
-	return nil
+	delete(m.Map, key)
+	m.Mutex.Unlock()
 }
 
 type Cache interface {
 	Set(key string, value interface{}, expire time.Duration)
 	Get(key string) interface{}
-	Del(key string) error
+	Del(key string)
 }
 
 func NewCache() Cache {
