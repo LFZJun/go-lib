@@ -7,8 +7,8 @@ import (
 
 type Value struct {
 	V      interface{}
-	Expire time.Duration
-	Done   chan struct{}
+	expire time.Duration
+	done   chan struct{}
 }
 
 type Maps struct {
@@ -18,24 +18,30 @@ type Maps struct {
 
 func (m *Maps) tick(key string, value *Value) {
 	select {
-	case <-time.After(value.Expire):
+	case <-time.After(value.expire):
 		m.Mutex.Lock()
 		delete(m.Map, key)
 		m.Mutex.Unlock()
-	case <-value.Done:
+	case <-value.done:
 	}
 }
 
 func (m *Maps) Set(key string, value interface{}, expire time.Duration) {
-	v := &Value{value, expire, make(chan struct{})}
+	var v *Value
+	switch {
+	case expire >= 0:
+		v = &Value{value, expire, make(chan struct{})}
+	default:
+		v = &Value{value, expire, nil}
+	}
 	m.Mutex.Lock()
 	vv, ok := m.Map[key]
-	if ok && vv.Expire >= 0 {
-		vv.Done <- struct{}{}
+	if ok && vv.expire >= 0 {
+		vv.done <- struct{}{}
 	}
 	m.Map[key] = v
 	m.Mutex.Unlock()
-	if v.Expire >= 0 {
+	if v.expire >= 0 {
 		go m.tick(key, v)
 	}
 
@@ -58,7 +64,9 @@ func (m *Maps) Del(key string) error {
 	if !ok {
 		return nil
 	}
-	v.Done <- struct{}{}
+	if v.expire >= 0 {
+		v.done <- struct{}{}
+	}
 	delete(m.Map, key)
 	return nil
 }
