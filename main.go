@@ -1,27 +1,15 @@
 package main
 
-import (
-	"fmt"
-	"io/ioutil"
-	"net"
-	"time"
-)
+import "fmt"
+
+func Mod(shared, i int) int {
+	fmt.Println(shared-1, i)
+	fmt.Printf("%b %b\n", shared-1, i)
+	return i & (shared - 1)
+}
 
 func main() {
-	conn, err := net.Dial("tcp", "www.baidu.com:80")
-	defer conn.Close()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	tcpBody := ``
-	conn.Write([]byte(tcpBody))
-	//lines := strings.Split(tcpBody, "\r\n")
-	//for _, line := range lines {
-	//	conn.Write([]byte(line + "\r\n"))
-	//}
-	//conn.Write([]byte("\r\n"))
-	conn.SetDeadline(time.Now().Add(time.Second))
-	resp, err := ioutil.ReadAll(conn)
-	fmt.Println(string(resp))
+	shared := 2 << 3
+	i := 100
+	fmt.Printf("%b\n", Mod(shared, i))
 }

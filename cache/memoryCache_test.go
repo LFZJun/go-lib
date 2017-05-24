@@ -1,18 +1,16 @@
 package cache
 
 import (
-	"fmt"
 	"testing"
 	"time"
 )
 
-func TestCache(t *testing.T) {
+func BenchmarkCache_Get(b *testing.B) {
 	m := NewCache()
-	m.Set("name", "ljun", time.Millisecond*500)
-	m.Set("name", "ljun", -1)
-	fmt.Println(m.Get("name"))
-	time.Sleep(time.Second * 1)
-	m.Set("name", "ljun", time.Millisecond*500)
-	time.Sleep(time.Second * 1)
-	fmt.Println(m.Get("name"))
+
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			m.Get(time.Now().String())
+		}
+	})
 }
