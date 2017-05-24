@@ -11,6 +11,12 @@ type Value struct {
 	done   chan struct{}
 }
 
+func (v *Value) CancelDel() {
+	if v.expire > 0 {
+		v.done <- struct{}{}
+	}
+}
+
 type Maps struct {
 	Map   map[string]*Value
 	Mutex sync.RWMutex
@@ -31,43 +37,34 @@ func (m *Maps) Set(key string, value interface{}, expire time.Duration) {
 	switch {
 	case expire >= 0:
 		v = &Value{value, expire, make(chan struct{})}
+		defer func() {go m.tick(key, v)}()
 	default:
 		v = &Value{value, expire, nil}
 	}
 	m.Mutex.Lock()
-	vv, ok := m.Map[key]
-	if ok && vv.expire >= 0 {
-		vv.done <- struct{}{}
+	if vv, ok := m.Map[key]; ok {
+		vv.CancelDel()
 	}
 	m.Map[key] = v
 	m.Mutex.Unlock()
-	if v.expire >= 0 {
-		go m.tick(key, v)
-	}
-
 }
 
 func (m *Maps) Get(key string) interface{} {
 	m.Mutex.RLock()
 	defer m.Mutex.RUnlock()
-	v, ok := m.Map[key]
-	if !ok {
-		return nil
+	if v, ok := m.Map[key]; ok {
+		return v.V
 	}
-	return v.V
+	return nil
 }
 
 func (m *Maps) Del(key string) error {
 	m.Mutex.Lock()
 	defer m.Mutex.Unlock()
-	v, ok := m.Map[key]
-	if !ok {
-		return nil
+	if v, ok := m.Map[key]; ok {
+		v.CancelDel()
+		delete(m.Map, key)
 	}
-	if v.expire >= 0 {
-		v.done <- struct{}{}
-	}
-	delete(m.Map, key)
 	return nil
 }
 
