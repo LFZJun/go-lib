@@ -6,7 +6,10 @@ import (
 	"github.com/pelletier/go-toml"
 )
 
-var load = false
+var (
+	load       = false
+	tomlPlugin = new(iocToml)
+)
 
 func tomlLoad() {
 	if !load {
@@ -14,8 +17,6 @@ func tomlLoad() {
 		load = true
 	}
 }
-
-var tomlPlugin = new(iocToml)
 
 type iocToml toml.TomlTree
 

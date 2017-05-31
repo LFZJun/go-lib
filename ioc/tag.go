@@ -1,6 +1,7 @@
 package ioc
 
 import (
+	"github.com/LFZJun/go-lib/ioc/reflectl"
 	"reflect"
 	"strings"
 )
@@ -32,7 +33,7 @@ func buildFieldOptions(tagIoc string, class reflect.StructField) *fieldOption {
 	if tagIoc == "*" {
 		to.auto = true
 		to.dependent = true
-		to.name = class.Type.Elem().Name()
+		to.name = reflectl.GetTypeDefaultName(class.Type)
 		return to
 	}
 	to.dependent = true

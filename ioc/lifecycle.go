@@ -3,6 +3,6 @@ package ioc
 type Lifecycle int
 
 const (
-	BeforeInit  = iota
+	BeforeInit = iota
 	BeforeReady
 )
