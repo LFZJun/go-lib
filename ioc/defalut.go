@@ -5,8 +5,10 @@ import (
 	"os"
 )
 
-var logger = log.New(os.Stdout, "[ioc]", log.LstdFlags|log.Lshortfile)
-var defaultContainer = NewContainer()
+var (
+	logger           = log.New(os.Stdout, "[ioc]", log.LstdFlags|log.Lshortfile)
+	defaultContainer = NewContainer()
+)
 
 func Put(stone Stone) {
 	defaultContainer.Put(stone)

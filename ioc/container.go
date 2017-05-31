@@ -3,6 +3,8 @@ package ioc
 import (
 	"reflect"
 	"sort"
+
+	"github.com/LFZJun/go-lib/ioc/reflectl"
 )
 
 func NewContainer() Container {
@@ -13,21 +15,23 @@ func NewContainer() Container {
 	}
 }
 
-type Container interface {
-	RegisterPlugin(lifecycle Lifecycle, p Plugin)
-	Put(stone Stone)
-	PutWithName(stone Stone, name string)
-	GetHolder(name string, t reflect.Type) (h *Holder)
-	GetStoneWithName(name string) Stone
-	Start()
-	putField(d *field)
-}
+type (
+	Container interface {
+		RegisterPlugin(lifecycle Lifecycle, p Plugin)
+		Put(stone Stone)
+		PutWithName(stone Stone, name string)
+		GetHolder(name string, t reflect.Type) (h *Holder)
+		GetStoneWithName(name string) Stone
+		Start()
+		putField(d *field)
+	}
 
-type container struct {
-	holderMap map[string][]*Holder
-	fields    map[string][]*field
-	plugins   map[Lifecycle]plugins
-}
+	container struct {
+		holderMap map[string][]*Holder
+		fields    map[string][]*field
+		plugins   map[Lifecycle]plugins
+	}
+)
 
 func (c *container) RegisterPlugin(lifecycle Lifecycle, p Plugin) {
 	if _, ok := c.plugins[lifecycle]; !ok {
@@ -42,7 +46,7 @@ func (c *container) putStone(stone Stone, name string) {
 	switch kind := t.Kind(); kind {
 	case reflect.Ptr:
 		if name == "" {
-			name = t.Elem().Name()
+			name = reflectl.GetValueDefaultName(v)
 		}
 	default:
 		panic(ErrorPtr.Panic(kind))

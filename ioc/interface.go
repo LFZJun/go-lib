@@ -1,11 +1,11 @@
 package ioc
 
-type Stone interface{}
-
-type Init interface {
-	Init()
-}
-
-type Ready interface {
-	Ready()
-}
+type (
+	Stone interface{}
+	Init  interface {
+		Init()
+	}
+	Ready interface {
+		Ready()
+	}
+)
