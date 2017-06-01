@@ -6,11 +6,22 @@ import (
 )
 
 func BenchmarkCache_Get(b *testing.B) {
-	m := NewCache()
+	c := NewCacheTTL()
 
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			m.Get(time.Now().String())
+			c.Get(time.Now().String())
+		}
+	})
+}
+
+func BenchmarkName(b *testing.B) {
+	c := NewCacheTTL()
+
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			now := time.Now().String()
+			c.SetDeadline(now, now, time.Now().Add(time.Second*10))
 		}
 	})
 }
