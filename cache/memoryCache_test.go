@@ -6,7 +6,7 @@ import (
 )
 
 func BenchmarkCache_Get(b *testing.B) {
-	c := NewCacheTTL()
+	c := NewTTLCache(1 << 8)
 
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
@@ -15,8 +15,8 @@ func BenchmarkCache_Get(b *testing.B) {
 	})
 }
 
-func BenchmarkName(b *testing.B) {
-	c := NewCacheTTL()
+func BenchmarkTTLCache_SetDeadline(b *testing.B) {
+	c := NewTTLCache(1 << 8)
 
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {

@@ -4,6 +4,8 @@ import (
 	"context"
 	"sync"
 	"time"
+
+	"github.com/LFZJun/go-lib/cache/hashl"
 )
 
 type (
@@ -19,8 +21,12 @@ type (
 		Map   map[string]*Store
 		Mutex sync.RWMutex
 	}
-	CacheTTL struct {
+	TTL struct {
 		m *MapMutex
+	}
+	TTLCache struct {
+		size int
+		ttls []*TTL
 	}
 )
 
@@ -32,12 +38,8 @@ func (m *MapMutex) Set(key string, store *Store) {
 
 func (m *MapMutex) Get(key string) *Store {
 	m.Mutex.RLock()
-	if v, ok := m.Map[key]; ok {
-		m.Mutex.RUnlock()
-		return v
-	}
-	m.Mutex.RUnlock()
-	return nil
+	defer m.Mutex.RUnlock()
+	return m.Map[key]
 }
 
 func (m *MapMutex) Del(key string) {
@@ -46,45 +48,68 @@ func (m *MapMutex) Del(key string) {
 	m.Mutex.Unlock()
 }
 
-func (c *CacheTTL) tick(key string, s *Store) {
+func (t *TTL) tick(key string, s *Store) {
 	select {
 	case <-time.After(s.timeout):
-		c.m.Del(key)
+		t.m.Del(key)
 	case <-s.done:
 	}
 }
 
-func (c *CacheTTL) set(key string, s *Store) {
+func (t *TTL) set(key string, s *Store) {
 	switch {
 	case s.timeout >= 0:
 		ctx, cancel := context.WithCancel(context.Background())
 		s.done = ctx.Done()
 		s.cancel = cancel
-		go c.tick(key, s)
+		go t.tick(key, s)
 	default:
 	}
-	if vv := c.m.Get(key); vv != nil && vv.timeout >= 0 {
+	if vv := t.m.Get(key); vv != nil && vv.timeout >= 0 {
 		vv.cancel()
 	}
-	c.m.Set(key, s)
+	t.m.Set(key, s)
 }
 
-func (c *CacheTTL) SetDeadline(key string, value interface{}, deadline time.Time) {
-	c.set(key, &Store{Value: value, timeout: time.Until(deadline), deadline: deadline})
+func (t *TTL) SetDeadline(key string, value interface{}, deadline time.Time) {
+	t.set(key, &Store{Value: value, timeout: time.Until(deadline), deadline: deadline})
 }
 
-func (c *CacheTTL) SetTimeout(key string, value interface{}, timeout time.Duration) {
-	c.set(key, &Store{Value: value, timeout: timeout, deadline: time.Now().Add(timeout)})
+func (t *TTL) SetTimeout(key string, value interface{}, timeout time.Duration) {
+	t.set(key, &Store{Value: value, timeout: timeout, deadline: time.Now().Add(timeout)})
 }
 
-func (c *CacheTTL) Get(key string) *Store {
-	return c.m.Get(key)
+func (t *TTL) Get(key string) *Store {
+	return t.m.Get(key)
+}
+
+func (tc *TTLCache) Get(key string) *Store {
+	index := hashl.HashIndex32(key, uint32(tc.size))
+	return tc.ttls[index].Get(key)
+}
+
+func (tc *TTLCache) SetDeadline(key string, value interface{}, deadline time.Time) {
+	index := hashl.HashIndex32(key, uint32(tc.size))
+	tc.ttls[index].SetDeadline(key, value, deadline)
+}
+
+func (tc *TTLCache) SetTimeout(key string, value interface{}, timeout time.Duration) {
+	index := hashl.HashIndex32(key, uint32(tc.size))
+	tc.ttls[index].SetTimeout(key, value, timeout)
 }
 
 func NewMapMutex() *MapMutex {
 	return &MapMutex{Map: make(map[string]*Store)}
 }
 
-func NewCacheTTL() *CacheTTL {
-	return &CacheTTL{NewMapMutex()}
+func NewTTL() *TTL {
+	return &TTL{NewMapMutex()}
+}
+
+func NewTTLCache(size int) *TTLCache {
+	t := make([]*TTL, 0, size)
+	for i := 0; i < size; i++ {
+		t = append(t, NewTTL())
+	}
+	return &TTLCache{size: size, ttls: t}
 }
