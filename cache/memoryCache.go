@@ -11,8 +11,8 @@ import (
 type (
 	Store struct {
 		Value    interface{}
-		timeout  time.Duration
-		deadline time.Time
+		Timeout  time.Duration
+		Deadline time.Time
 
 		done   <-chan struct{}
 		cancel context.CancelFunc
@@ -25,7 +25,7 @@ type (
 		m *MapMutex
 	}
 	TTLCache struct {
-		size int
+		size uint32
 		ttls []*TTL
 	}
 )
@@ -50,33 +50,33 @@ func (m *MapMutex) Del(key string) {
 
 func (t *TTL) tick(key string, s *Store) {
 	select {
-	case <-time.After(s.timeout):
+	case <-time.After(s.Timeout):
 		t.m.Del(key)
 	case <-s.done:
 	}
 }
 
-func (t *TTL) set(key string, s *Store) {
+func (t *TTL) Set(key string, s *Store) {
 	switch {
-	case s.timeout >= 0:
+	case s.Timeout >= 0:
 		ctx, cancel := context.WithCancel(context.Background())
 		s.done = ctx.Done()
 		s.cancel = cancel
-		go t.tick(key, s)
+		go t.tick(key, s) // 随着 coroutine的数量上升，性能会急剧下降，所以说赶紧换个定时器吧
 	default:
 	}
-	if vv := t.m.Get(key); vv != nil && vv.timeout >= 0 {
+	if vv := t.m.Get(key); vv != nil && vv.Timeout >= 0 { // 会有一次读的性能损耗 采用这种定时策略
 		vv.cancel()
 	}
 	t.m.Set(key, s)
 }
 
 func (t *TTL) SetDeadline(key string, value interface{}, deadline time.Time) {
-	t.set(key, &Store{Value: value, timeout: time.Until(deadline), deadline: deadline})
+	t.Set(key, &Store{Value: value, Timeout: time.Until(deadline), Deadline: deadline})
 }
 
 func (t *TTL) SetTimeout(key string, value interface{}, timeout time.Duration) {
-	t.set(key, &Store{Value: value, timeout: timeout, deadline: time.Now().Add(timeout)})
+	t.Set(key, &Store{Value: value, Timeout: timeout, Deadline: time.Now().Add(timeout)})
 }
 
 func (t *TTL) Get(key string) *Store {
@@ -84,17 +84,22 @@ func (t *TTL) Get(key string) *Store {
 }
 
 func (tc *TTLCache) Get(key string) *Store {
-	index := hashl.HashIndex32(key, uint32(tc.size))
+	index := hashl.HashIndex32(key, tc.size)
 	return tc.ttls[index].Get(key)
 }
 
+func (tc *TTLCache) Set(key string, s *Store) {
+	index := hashl.HashIndex32(key, tc.size)
+	tc.ttls[index].Set(key, s)
+}
+
 func (tc *TTLCache) SetDeadline(key string, value interface{}, deadline time.Time) {
-	index := hashl.HashIndex32(key, uint32(tc.size))
+	index := hashl.HashIndex32(key, tc.size)
 	tc.ttls[index].SetDeadline(key, value, deadline)
 }
 
 func (tc *TTLCache) SetTimeout(key string, value interface{}, timeout time.Duration) {
-	index := hashl.HashIndex32(key, uint32(tc.size))
+	index := hashl.HashIndex32(key, tc.size)
 	tc.ttls[index].SetTimeout(key, value, timeout)
 }
 
@@ -106,9 +111,9 @@ func NewTTL() *TTL {
 	return &TTL{NewMapMutex()}
 }
 
-func NewTTLCache(size int) *TTLCache {
+func NewTTLCache(size uint32) *TTLCache {
 	t := make([]*TTL, 0, size)
-	for i := 0; i < size; i++ {
+	for i := 0; i < int(size); i++ {
 		t = append(t, NewTTL())
 	}
 	return &TTLCache{size: size, ttls: t}
