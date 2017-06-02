@@ -23,7 +23,7 @@ func Distance(str1, str2 string) int {
 			if s1[y-1] != s2[x-1] {
 				cost = 1
 			}
-			column[y] = min(
+			column[y] = Min(
 				column[y]+1,
 				column[y-1]+1,
 				lastdiag+cost)
@@ -33,7 +33,7 @@ func Distance(str1, str2 string) int {
 	return column[lenS1]
 }
 
-func min(a, b, c int) int {
+func Min(a, b, c int) int {
 	if a < b {
 		if a < c {
 			return a
