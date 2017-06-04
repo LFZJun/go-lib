@@ -1,9 +1,7 @@
 package levenshtein
 
-func Distance(str1, str2 string) int {
+func optimizeDynamicDistance(s1, s2 []rune) int {
 	var cost, lastdiag, olddiag int
-	s1 := []rune(str1)
-	s2 := []rune(str2)
 
 	lenS1 := len(s1)
 	lenS2 := len(s2)
@@ -23,7 +21,7 @@ func Distance(str1, str2 string) int {
 			if s1[y-1] != s2[x-1] {
 				cost = 1
 			}
-			column[y] = Min(
+			column[y] = MinOfThree(
 				column[y]+1,
 				column[y-1]+1,
 				lastdiag+cost)
@@ -33,15 +31,6 @@ func Distance(str1, str2 string) int {
 	return column[lenS1]
 }
 
-func Min(a, b, c int) int {
-	if a < b {
-		if a < c {
-			return a
-		}
-	} else {
-		if b < c {
-			return b
-		}
-	}
-	return c
+func OptimizeDynamicDistance(str1, str2 string) int {
+	return optimizeDynamicDistance([]rune(str1), []rune(str2))
 }

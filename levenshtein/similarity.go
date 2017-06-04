@@ -6,7 +6,7 @@ import (
 )
 
 func Similarity(v1, v2 string) ln {
-	distance := Distance(v1, v2)
+	distance := OptimizeDynamicDistance(v1, v2)
 	return ln(1 - float64(distance)/math.Max(float64(len([]rune(v1))), float64(len([]rune(v2)))))
 }
 
