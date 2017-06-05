@@ -5,7 +5,7 @@ import (
 	"reflect"
 )
 
-func GroupBy(dest, src interface{}, hash func(h interface{}) interface{}, key func(k interface{}) int64, reverse bool) error {
+func GroupBy(dest, src interface{}, hash func(h interface{}) interface{}, cmp func(i interface{}, j interface{}) bool) error {
 	destValueOf := reflect.ValueOf(dest)
 	if destValueOf.Kind() != reflect.Ptr {
 		return errors.New("must pass a pointer, not a value, to StructScan destination")
@@ -23,22 +23,11 @@ func GroupBy(dest, src interface{}, hash func(h interface{}) interface{}, key fu
 	}
 	set := make(map[interface{}]interface{})
 	length := srcRef.Len()
-	var compareing func(a, b int64) bool
-	if reverse {
-		compareing = func(a, b int64) bool {
-			return a <= b
-		}
-	} else {
-		compareing = func(a, b int64) bool {
-			return a > b
-		}
-	}
 	for i := 0; i < length; i++ {
 		v := srcRef.Index(i).Interface()
 		id := hash(v)
-		t := key(v)
 		if vv, has := set[id]; has {
-			if compareing(key(vv), t) {
+			if cmp(v, vv) {
 				set[id] = v
 			}
 		} else {
