@@ -16,17 +16,10 @@ func TestGroupBy(t *testing.T) {
 	hashFunc := func(h interface{}) interface{} {
 		return h.(Foo).Id
 	}
-	keyFunc := func(k interface{}) int64 {
-		return k.(Foo).Value
+	cmpFunc := func(i interface{}, j interface{}) bool {
+		return i.(Foo).Value < j.(Foo).Value
 	}
-	err := GroupBy(&destFoo, srcFoo, hashFunc, keyFunc, false)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(destFoo)
-	destFoo = []Foo{}
-	err = GroupBy(&destFoo, srcFoo, hashFunc, keyFunc, true)
+	err := GroupBy(&destFoo, srcFoo, hashFunc, cmpFunc)
 	if err != nil {
 		fmt.Println(err)
 		return
