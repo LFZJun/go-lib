@@ -1,21 +1,20 @@
 package slice
 
 import (
-	"errors"
 	"reflect"
 )
 
 func Filter(src interface{}, filter func(i interface{}) bool) error {
 	srcValueOf := reflect.ValueOf(src)
 	if srcValueOf.Kind() != reflect.Ptr {
-		return errors.New("must pass a pointer, not a value, to StructScan destination")
+		return MustPtr
 	}
 	if srcValueOf.IsNil() {
-		return errors.New("nil pointer passed to StructScan destination")
+		return NilPtr
 	}
 	destRef := reflect.Indirect(srcValueOf)
 	if destRef.Kind() != reflect.Slice {
-		return errors.New("must pass a slice pointer with src")
+		return MustSlice
 	}
 	tempSlice := reflect.MakeSlice(destRef.Type(), 0, 0)
 	length := destRef.Len()

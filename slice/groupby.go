@@ -1,25 +1,24 @@
 package slice
 
 import (
-	"errors"
 	"reflect"
 )
 
 func GroupBy(dest, src interface{}, hash func(h interface{}) interface{}, cmp func(i interface{}, j interface{}) bool) error {
 	destValueOf := reflect.ValueOf(dest)
 	if destValueOf.Kind() != reflect.Ptr {
-		return errors.New("must pass a pointer, not a value, to StructScan destination")
+		return MustPtr
 	}
 	if destValueOf.IsNil() {
-		return errors.New("nil pointer passed to StructScan destination")
+		return NilPtr
 	}
 	destRef := reflect.Indirect(destValueOf)
 	if destRef.Kind() != reflect.Slice {
-		return errors.New("must pass a slice pointer with dest")
+		return MustSlice
 	}
 	srcRef := reflect.ValueOf(src)
 	if destRef.Type() != srcRef.Type() {
-		return errors.New("must pass same type of dest, src")
+		return MustSameType
 	}
 	set := make(map[interface{}]interface{})
 	length := srcRef.Len()
