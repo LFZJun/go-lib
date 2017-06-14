@@ -2,8 +2,6 @@ package pool
 
 import "errors"
 
-var NEWNOIMPLEMENT = errors.New("连接池初始化函数未实现")
-
 type ConnectionPool interface {
 	Get() interface{}
 	Release(conn interface{})
@@ -24,7 +22,7 @@ func (c *connectionPool) size() int {
 
 func (c *connectionPool) neww() (interface{}, error) {
 	if c.New == nil {
-		return nil, NEWNOIMPLEMENT
+		return nil, errors.New("连接池初始化函数未实现")
 	}
 	return c.New()
 }
