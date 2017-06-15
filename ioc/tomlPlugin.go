@@ -8,7 +8,7 @@ import (
 
 var (
 	load       = false
-	tomlPlugin = new(iocToml)
+	tomlPlugin = new(iToml)
 )
 
 func tomlLoad() {
@@ -18,9 +18,9 @@ func tomlLoad() {
 	}
 }
 
-type iocToml toml.TomlTree
+type iToml toml.TomlTree
 
-func (i *iocToml) Value(path string) interface{} {
+func (i *iToml) Value(path string) interface{} {
 	v := (*toml.TomlTree)(i).Get(path)
 	if v == nil {
 		panic(ErrorMissing.Panic(path))
@@ -28,11 +28,11 @@ func (i *iocToml) Value(path string) interface{} {
 	return v
 }
 
-func (i *iocToml) Prefix() string {
+func (i *iToml) Prefix() string {
 	return "#"
 }
 
-func (i *iocToml) Priority() int {
+func (i *iToml) Priority() int {
 	return 0
 }
 
@@ -42,7 +42,7 @@ func TomlLoad(content string) error {
 	if err != nil {
 		return err
 	}
-	*tomlPlugin = (iocToml)(*tree)
+	*tomlPlugin = (iToml)(*tree)
 	return nil
 }
 
@@ -52,7 +52,7 @@ func TomlLoadFile(path string) error {
 	if err != nil {
 		return err
 	}
-	*tomlPlugin = (iocToml)(*tree)
+	*tomlPlugin = (iToml)(*tree)
 	return nil
 }
 
@@ -62,6 +62,6 @@ func TomlLoadReader(reader io.Reader) error {
 	if err != nil {
 		return err
 	}
-	*tomlPlugin = (iocToml)(*tree)
+	*tomlPlugin = (iToml)(*tree)
 	return nil
 }

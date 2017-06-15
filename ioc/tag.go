@@ -1,7 +1,7 @@
 package ioc
 
 import (
-	"github.com/LFZJun/go-lib/ioc/reflectl"
+	"github.com/LFZJun/go-lib/reflectl"
 	"reflect"
 	"strings"
 )
