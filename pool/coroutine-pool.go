@@ -51,8 +51,8 @@ func (c *coroutinePool) coroutineRun() {
 			return
 		}
 		fn()
-		c.auto <- struct{}{}
 		c.wait.Add(-1)
+		c.auto <- struct{}{}
 	}
 }
 
@@ -63,14 +63,15 @@ func (c *coroutinePool) autoAdd() {
 			return
 		}
 		if t, has := c.buf.Pop(); has {
+			c.wait.Add(1)
 			c.Task <- t
 		}
 	}
 }
 
 func (c *coroutinePool) Add(fn Task) {
-	c.wait.Add(1)
 	if len(c.Task) < c.Size {
+		c.wait.Add(1)
 		c.Task <- fn
 		return
 	}

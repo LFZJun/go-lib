@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"sort"
 
-	"github.com/LFZJun/go-lib/ioc/reflectl"
+	"github.com/LFZJun/go-lib/reflectl"
 )
 
 func NewContainer() Container {

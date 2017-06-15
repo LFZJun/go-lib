@@ -1,29 +1,19 @@
 package slice
 
 import (
+	"github.com/LFZJun/go-lib/reflectl"
 	"reflect"
 )
 
-func GroupBy(dest, src interface{}, hash func(h interface{}) interface{}, cmp func(i interface{}, j interface{}) bool) error {
-	destValueOf := reflect.ValueOf(dest)
-	if destValueOf.Kind() != reflect.Ptr {
-		return MustPtr
-	}
-	if destValueOf.IsNil() {
-		return NilPtr
-	}
-	destRef := reflect.Indirect(destValueOf)
-	if destRef.Kind() != reflect.Slice {
-		return MustSlice
-	}
-	srcRef := reflect.ValueOf(src)
-	if destRef.Type() != srcRef.Type() {
-		return MustSameType
+func GroupBy(src interface{}, hash func(h interface{}) interface{}, cmp func(i interface{}, j interface{}) bool) error {
+	destRef, err := reflectl.IsSlicePtr(src)
+	if err != nil {
+		return err
 	}
 	set := make(map[interface{}]interface{})
-	length := srcRef.Len()
+	length := destRef.Len()
 	for i := 0; i < length; i++ {
-		v := srcRef.Index(i).Interface()
+		v := destRef.Index(i).Interface()
 		id := hash(v)
 		if vv, has := set[id]; has {
 			if cmp(v, vv) {
@@ -33,8 +23,10 @@ func GroupBy(dest, src interface{}, hash func(h interface{}) interface{}, cmp fu
 			set[id] = v
 		}
 	}
+	tempSlice := reflect.MakeSlice(destRef.Type(), 0, 0)
 	for _, v := range set {
-		destRef.Set(reflect.Append(destRef, reflect.ValueOf(v)))
+		tempSlice = reflect.Append(tempSlice, reflect.ValueOf(v))
 	}
+	destRef.Set(tempSlice)
 	return nil
 }
