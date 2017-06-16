@@ -4,32 +4,36 @@ import (
 	"reflect"
 	"sort"
 
+	"fmt"
 	"github.com/LFZJun/go-lib/reflectl"
 )
 
 func NewContainer() Container {
 	return &container{
-		holderMap: make(map[string][]*Holder),
-		fields:    make(map[string][]*field),
-		plugins:   make(map[Lifecycle]plugins),
+		cupMap:   make(map[string][]*Cup),
+		sugarMap: make(map[string][]Sugar),
+		plugins:  make(map[Lifecycle]Plugins),
 	}
 }
 
 type (
 	Container interface {
 		RegisterPlugin(lifecycle Lifecycle, p Plugin)
-		Put(stone Stone)
-		PutWithName(stone Stone, name string)
-		GetHolder(name string, t reflect.Type) (h *Holder)
-		GetStoneWithName(name string) Stone
+		addSugar(sugar Sugar)
+		Add(water Water)
+		AddWithName(water Water, name string)
+		GetCup(name string, dropType reflect.Type) (h *Cup)
+		GetWaterWithName(name string) Water
+		EachCup(cupFunc CupFunc)
 		Start()
-		putField(d *field)
 	}
 
+	containPlugin interface {
+	}
 	container struct {
-		holderMap map[string][]*Holder
-		fields    map[string][]*field
-		plugins   map[Lifecycle]plugins
+		cupMap   map[string][]*Cup
+		sugarMap map[string][]Sugar
+		plugins  map[Lifecycle]Plugins
 	}
 )
 
@@ -40,8 +44,17 @@ func (c *container) RegisterPlugin(lifecycle Lifecycle, p Plugin) {
 	c.plugins[lifecycle] = append(c.plugins[lifecycle], p)
 }
 
-func (c *container) putStone(stone Stone, name string) {
-	v := reflect.ValueOf(stone)
+func (c *container) addSugar(sugar Sugar) {
+	prefix := sugar.Prefix()
+	if _, has := c.sugarMap[prefix]; !has {
+		c.sugarMap[prefix] = []Sugar{sugar}
+		return
+	}
+	c.sugarMap[prefix] = append(c.sugarMap[prefix], sugar)
+}
+
+func (c *container) addWater(water Water, name string) {
+	v := reflect.ValueOf(water)
 	t := v.Type()
 	switch kind := t.Kind(); kind {
 	case reflect.Ptr:
@@ -51,86 +64,81 @@ func (c *container) putStone(stone Stone, name string) {
 	default:
 		panic(ErrorPtr.Panic(kind))
 	}
-	logger.Printf("放入 %v", name)
+	logger.Output(4, fmt.Sprintf("放入 %v", name))
 	// 额，没想到并发的场景所以没加锁
-	if _, ok := c.holderMap[name]; !ok {
-		holder := newHolder(stone, t, v, c)
-		c.holderMap[name] = append(c.holderMap[name], holder)
+	if _, ok := c.cupMap[name]; !ok {
+		cup := newCup(water, t, v, c)
+		c.cupMap[name] = append(c.cupMap[name], cup)
 	}
 }
 
-func (c *container) Put(stone Stone) {
-	c.putStone(stone, "")
+func (c *container) Add(water Water) {
+	c.addWater(water, "")
 }
 
-func (c *container) PutWithName(stone Stone, name string) {
-	c.putStone(stone, name)
+func (c *container) AddWithName(water Water, name string) {
+	c.addWater(water, name)
 }
 
-func (c *container) GetStoneWithName(name string) Stone {
-	if hs, ok := c.holderMap[name]; ok {
+func (c *container) GetWaterWithName(name string) Water {
+	if hs, ok := c.cupMap[name]; ok {
 		switch len(hs) {
 		case 0:
 			return nil
 		default:
-			return hs[0].Stone
+			return hs[0].Water
 		}
 	}
 	return nil
 }
 
-func (c *container) GetHolder(name string, t reflect.Type) (h *Holder) {
-	if holder, found := c.holderMap[name]; found {
-		for _, h := range holder {
-			if h.Equal(t) {
-				return h
+func (c *container) GetCup(name string, t reflect.Type) (h *Cup) {
+	if cups, found := c.cupMap[name]; found {
+		for _, cup := range cups {
+			if reflectl.EqualType(t, cup.Class) {
+				return cup
 			}
 		}
 	}
 	return nil
 }
 
-func (c *container) putField(d *field) {
-	prefix := d.fieldOption.prefix
-	if _, has := c.fields[prefix]; !has {
-		c.fields[prefix] = []*field{}
-	}
-	c.fields[prefix] = append(c.fields[prefix], d)
-}
-
-func (c *container) eachHolder(holderFunc HolderFunc) {
-	for _, v := range c.holderMap {
+func (c *container) EachCup(cupFunc CupFunc) {
+	for _, v := range c.cupMap {
 		for _, vv := range v {
-			holderFunc(vv)
+			if cupFunc(vv) {
+				return
+			}
 		}
 	}
 }
 
-func (c *container) genDependents() {
-	c.eachHolder(func(holder *Holder) {
-		holder.genDependents()
+func (c *container) injectDependency() {
+	c.EachCup(func(cup *Cup) bool {
+		cup.injectDependency()
+		return false
 	})
 }
 
 func (c *container) loadPlugins(lifecycle Lifecycle) {
-	ps, ok := c.plugins[lifecycle]
-	if !ok || len(ps) == 0 {
+	plugins, ok := c.plugins[lifecycle]
+	if !ok || len(plugins) == 0 {
 		return
 	}
-	sort.Sort(ps)
-	for _, p := range ps {
-		fs, ok := c.fields[p.Prefix()]
+	sort.Sort(plugins)
+	for _, plugin := range plugins {
+		sugars, ok := c.sugarMap[plugin.Prefix()]
 		if !ok {
-			return
+			continue
 		}
-		for _, f := range fs {
-			f.loadPlugin(p)
+		for _, sugar := range sugars {
+			sugar.LoadPlugin(plugin)
 		}
 	}
 }
 
 func (c *container) Start() {
-	c.genDependents()
+	c.injectDependency()
 	c.loadPlugins(BeforeInit)
 	c.init()
 	c.loadPlugins(BeforeReady)
@@ -138,15 +146,17 @@ func (c *container) Start() {
 }
 
 func (c *container) init() {
-	set := make(HolderSet)
-	c.eachHolder(func(holder *Holder) {
-		holder.init(set)
+	set := make(CupSet)
+	c.EachCup(func(cup *Cup) bool {
+		cup.init(set)
+		return false
 	})
 }
 
 func (c *container) ready() {
-	set := make(HolderSet)
-	c.eachHolder(func(holder *Holder) {
-		holder.ready(set)
+	set := make(CupSet)
+	c.EachCup(func(cup *Cup) bool {
+		cup.ready(set)
+		return false
 	})
 }

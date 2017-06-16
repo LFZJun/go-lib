@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-type fieldOption struct {
+type dropInfo struct {
 	auto      bool
 	dependent bool
 	name      string
@@ -14,29 +14,34 @@ type fieldOption struct {
 	path      string
 }
 
-func buildFieldOptions(tagIoc string, class reflect.StructField) *fieldOption {
-	to := &fieldOption{}
+// 正则表达式说明
+// 1. ioc:"[^\.]*" 由ioc控制依赖注入
+// 2. ioc:"[^\.]*\..*" 由ioc plugin控制依赖注入
+func newDropInfo(tagIoc string, class reflect.StructField) *dropInfo {
+	si := &dropInfo{}
 	dotIndex := strings.Index(tagIoc, ".")
 	switch {
 	case dotIndex == 0:
 		panic(ErrorTagDotIndex.Panic(class.Name, class.Type, class.Tag, ". 不能放在首位"))
 	case dotIndex == len(tagIoc)-1:
 		panic(ErrorTagDotIndex.Panic(class.Name, class.Type, class.Tag, ". 不能放在末尾"))
-	case dotIndex > 0:
-		to.prefix = tagIoc[:dotIndex]
-		to.path = tagIoc[dotIndex+1:]
-		return to
+	case dotIndex > 0: // 2.
+		si.prefix = tagIoc[:dotIndex]
+		si.path = tagIoc[dotIndex+1:]
+		si.name = reflectl.GetTypeDefaultName(class.Type)
+		return si
 	}
 	if class.Type.Kind() != reflect.Ptr {
 		panic(ErrorTagPtr.Panic(class.Name, class.Type, class.Tag))
 	}
+	// 1.
 	if tagIoc == "*" {
-		to.auto = true
-		to.dependent = true
-		to.name = reflectl.GetTypeDefaultName(class.Type)
-		return to
+		si.auto = true
+		si.dependent = true
+		si.name = reflectl.GetTypeDefaultName(class.Type)
+		return si
 	}
-	to.dependent = true
-	to.name = tagIoc
-	return to
+	si.dependent = true
+	si.name = tagIoc
+	return si
 }
