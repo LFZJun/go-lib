@@ -32,7 +32,7 @@ func (b *BeforeInitPlugin) Lookup(path string, sugar Sugar) (v interface{}) {
 		sugar.Container().EachCup(func(cup *Cup) bool {
 			if beforeInitType, ok := cup.Water.(BeforeInitType); ok {
 				vv := beforeInitType.BeforeInit()
-				if reflectl.EqualType(sugar.Type(), reflect.TypeOf(vv)) {
+				if reflectl.TypeEqual(sugar.Type(), reflect.TypeOf(vv)) {
 					v = vv
 					return true
 				}

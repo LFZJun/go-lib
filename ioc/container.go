@@ -95,7 +95,7 @@ func (c *container) GetWaterWithName(name string) Water {
 func (c *container) GetCup(name string, t reflect.Type) (h *Cup) {
 	if cups, found := c.cupMap[name]; found {
 		for _, cup := range cups {
-			if reflectl.EqualType(t, cup.Class) {
+			if reflectl.TypeEqual(t, cup.Class) {
 				return cup
 			}
 		}
