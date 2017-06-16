@@ -25,28 +25,23 @@ func IsSlicePtr(i interface{}) (reflect.Value, error) {
 	return destRef, nil
 }
 
-func EqualType(a, b reflect.Type) bool {
+func TypeEqual(a, b reflect.Type) bool {
 	switch {
 	case a == nil, b == nil:
-		if a == b {
-			return true
-		}
+		return a == b
 	case a == b:
 		return true
 	}
 	switch a.Kind() {
 	case reflect.Interface:
-		if b.Implements(a) {
-			return true
-		}
+		return b.Implements(a)
 	case reflect.Ptr:
-		if a.AssignableTo(b) && a.ConvertibleTo(b) {
-			return true
-		}
+		return a.AssignableTo(b) && a.ConvertibleTo(b)
 	default:
-		if a.Kind() == b.Kind() {
-			return true
-		}
+		return a.Kind() == b.Kind()
 	}
-	return false
+}
+
+func TypeEqualI(a, b interface{}) bool {
+	return TypeEqual(reflect.TypeOf(a), reflect.TypeOf(b))
 }
