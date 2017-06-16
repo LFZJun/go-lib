@@ -6,20 +6,21 @@ import (
 )
 
 var (
-	logger           = log.New(os.Stdout, "[ioc]", log.LstdFlags|log.Lshortfile)
+	logger           = log.New(os.Stdout, "[ioc] ", log.Lshortfile)
 	defaultContainer = NewContainer()
+	OpenPlugin       = true
 )
 
-func Put(stone Stone) {
-	defaultContainer.Put(stone)
+func Add(water Water) {
+	defaultContainer.Add(water)
 }
 
-func PutWithName(stone Stone, name string) {
-	defaultContainer.PutWithName(stone, name)
+func AddWithName(water Water, name string) {
+	defaultContainer.AddWithName(water, name)
 }
 
-func GetStoneWithName(name string) Stone {
-	return defaultContainer.GetStoneWithName(name)
+func GetWithName(name string) Water {
+	return defaultContainer.GetWaterWithName(name)
 }
 
 func RegisterPlugin(lifecycle Lifecycle, p Plugin) {

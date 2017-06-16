@@ -1,7 +1,7 @@
 package ioc
 
 type (
-	Stone interface{}
+	Water interface{}
 	Init  interface {
 		Init()
 	}
