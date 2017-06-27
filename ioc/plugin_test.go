@@ -14,7 +14,7 @@ func (b *Bar1) BeforeInit() interface{} {
 }
 
 type Foo1 struct {
-	A string `ioc:"#.abc"`
+	A string `ioc:"#.ab"`
 	B string `ioc:"@.*"`
 	C string `ioc:"@.ioc.Bar1"`
 }
