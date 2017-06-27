@@ -23,7 +23,7 @@ type iToml toml.Tree
 func (i *iToml) Lookup(path string, sugar Sugar) interface{} {
 	v := (*toml.Tree)(i).Get(path)
 	if v == nil {
-		panic(ErrorMissing.Panic(path))
+		panic(ErrorMissing.Panic("#." + path))
 	}
 	return v
 }
