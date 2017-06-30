@@ -3,89 +3,11 @@ package calculator
 import (
 	"bytes"
 	"fmt"
-	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
+	"github.com/LFZJun/go-lib/algorithms/stack"
 )
-
-func errorType(i interface{}) {
-	panic(fmt.Sprintf("类型错误 %v %v", reflect.TypeOf(i), i))
-}
-
-func newStack() *stack {
-	return new(stack)
-}
-
-type stack struct {
-	list []interface{}
-	len  int
-}
-
-func (s *stack) Append(i interface{}) *stack {
-	if i == nil {
-		panic("不能存储nil")
-	}
-	s.list = append(s.list, i)
-	s.len++
-	return s
-}
-
-func (s *stack) Pop() interface{} {
-	if s.len == 0 {
-		return nil
-	}
-	back := s.list[s.len-1]
-	s.list = s.list[:s.len-1]
-	s.len--
-	return back
-}
-
-func (s *stack) PopString() string {
-	v := s.Pop()
-	if v == nil {
-		panic("无")
-	}
-	vv, ok := v.(string)
-	if !ok {
-		errorType(v)
-	}
-	return vv
-}
-
-func (s *stack) PopFloat64() float64 {
-	v := s.Pop()
-	vv, ok := v.(float64)
-	if !ok {
-		errorType(v)
-	}
-	return vv
-}
-
-func (s *stack) Back() interface{} {
-	if s.len == 0 {
-		return nil
-	}
-	return s.list[s.len-1]
-}
-
-func (s *stack) BackString() string {
-	v := s.Back()
-	vv, ok := v.(string)
-	if !ok {
-		errorType(v)
-	}
-	return vv
-}
-
-func (s *stack) BackFloat64() float64 {
-	v := s.Back()
-	vv, ok := v.(float64)
-	if !ok {
-		errorType(v)
-	}
-	return vv
-}
 
 const (
 	OPERATION = "+-/*"
@@ -123,11 +45,11 @@ func calc(n2 float64, n1 float64, operator string) float64 {
 	panic(fmt.Sprintf("无法识别运算符 %v", operator))
 }
 
-func applyOperation(operationStack *stack, outStack *stack) {
+func applyOperation(operationStack *stack.SimpleStack, outStack *stack.SimpleStack) {
 	outStack.Append(calc(outStack.PopFloat64(), outStack.PopFloat64(), operationStack.PopString()))
 }
 
-func isDigit(v int32) bool {
+func isDigitt(v int32) bool {
 	if v >= '0' && v <= '9' {
 		return true
 	}
@@ -149,7 +71,7 @@ func (c Calculator) Parse() <-chan string {
 		number := bytes.NewBuffer(nil)
 		for _, v := range string(c) {
 			switch {
-			case isDigit(v) || v == '.':
+			case isDigitt(v) || v == '.':
 				number.WriteByte(byte(v))
 			default:
 				if number.Len() > 0 {
@@ -172,31 +94,31 @@ func (c Calculator) Parse() <-chan string {
 }
 
 func (c Calculator) Evaluate() float64 {
-	operationStack := newStack()
-	outStack := newStack()
+	operationStack := stack.NewStack()
+	outStack := stack.NewStack()
 	for token := range c.Parse() {
 		switch {
 		case numericValue.Match([]byte(token)):
 			v, err := strconv.ParseFloat(token, 64)
 			if err != nil {
-				errorType(v)
+				panic(v)
 			}
 			outStack.Append(v)
 		case token == "(":
 			operationStack.Append(token)
 		case token == ")":
-			for operationStack.len > 0 && operationStack.Back() != "(" {
+			for operationStack.Len > 0 && operationStack.Back() != "(" {
 				applyOperation(operationStack, outStack)
 			}
 			operationStack.Pop()
 		default:
-			for operationStack.len > 0 && isOperator(operationStack.BackString()) && higherPriority(operationStack.BackString(), token) {
+			for operationStack.Len > 0 && isOperator(operationStack.BackString()) && higherPriority(operationStack.BackString(), token) {
 				applyOperation(operationStack, outStack)
 			}
 			operationStack.Append(token)
 		}
 	}
-	for operationStack.len > 0 {
+	for operationStack.Len > 0 {
 		applyOperation(operationStack, outStack)
 	}
 	return outStack.BackFloat64()

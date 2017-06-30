@@ -11,7 +11,7 @@
     * [连接池](pool/conncet-pool.go) (不能存map，因为复用的时候不会删除entry)
     * [协程池](pool/coroutine-pool.go) (只实现了size，没实现min, max，凑活用，hhh)
 1. [分布式锁](lock/redis_mutex.go) (redis实现)
-1. [环形队列](queue/RingQueue.go)
+1. [环形队列](algorithms/queue/RingQueue.go)
 1. [ioc](ioc)
 1. [parse tag](parser/tag/tag.go)
 1. [计算器](parser/calculator/calculator.go)
