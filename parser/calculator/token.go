@@ -12,7 +12,7 @@ const (
 )
 
 const (
-	tokenError      tokenType = iota
+	tokenError tokenType = iota
 	tokenEOF
 	tokenLeftParen
 	tokenRightParen

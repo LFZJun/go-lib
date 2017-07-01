@@ -9,7 +9,7 @@ func errorType(i interface{}) {
 	panic(fmt.Sprintf("类型错误 %v %v", reflect.TypeOf(i), i))
 }
 
-func NewStack() *SimpleStack {
+func NewSimpleStack() *SimpleStack {
 	return new(SimpleStack)
 }
 
@@ -29,7 +29,7 @@ func (s *SimpleStack) Append(i interface{}) *SimpleStack {
 
 func (s *SimpleStack) Pop() interface{} {
 	if s.Len == 0 {
-		return nil
+		panic("Len 0")
 	}
 	back := s.list[s.Len-1]
 	s.list = s.list[:s.Len-1]
@@ -39,9 +39,6 @@ func (s *SimpleStack) Pop() interface{} {
 
 func (s *SimpleStack) PopString() string {
 	v := s.Pop()
-	if v == nil {
-		panic("无")
-	}
 	vv, ok := v.(string)
 	if !ok {
 		errorType(v)
@@ -60,7 +57,7 @@ func (s *SimpleStack) PopFloat64() float64 {
 
 func (s *SimpleStack) Back() interface{} {
 	if s.Len == 0 {
-		return nil
+		panic("Len 0")
 	}
 	return s.list[s.Len-1]
 }

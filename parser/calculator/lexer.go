@@ -1,26 +1,26 @@
 package calculator
 
 import (
-	"github.com/pelletier/go-buffruneio"
 	"bytes"
 	"fmt"
+	"github.com/pelletier/go-buffruneio"
 	"io"
 )
 
-// Define state functions
-type LexStateFn func() LexStateFn
+type (
+	Lexer struct {
+		input         *buffruneio.Reader // Textual source
+		buffer        bytes.Buffer       // Runes composing the current token
+		tokens        chan token
+		depth         int
+		line          int
+		col           int
+		endbufferLine int
+		endbufferCol  int
+	}
 
-// Define lexer
-type Lexer struct {
-	input         *buffruneio.Reader // Textual source
-	buffer        bytes.Buffer       // Runes composing the current token
-	tokens        chan token
-	depth         int
-	line          int
-	col           int
-	endbufferLine int
-	endbufferCol  int
-}
+	LexStateFn func() LexStateFn
+)
 
 func (l *Lexer) read() rune {
 	r, _, err := l.input.ReadRune()
@@ -232,7 +232,7 @@ func (l *Lexer) run() {
 	close(l.tokens)
 }
 
-func lexToml(input io.Reader) chan token {
+func lex(input io.Reader) chan token {
 	bufferedInput := buffruneio.NewReader(input)
 	l := &Lexer{
 		input:         bufferedInput,
