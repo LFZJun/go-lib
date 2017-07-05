@@ -11,11 +11,19 @@
     * [连接池](pool/conncet-pool.go) (不能存map，因为复用的时候不会删除entry)
     * [协程池](pool/coroutine-pool.go) (只实现了size，没实现min, max，凑活用，hhh)
 1. [分布式锁](lock/redis_mutex.go) (redis实现)
-1. [环形队列](algorithms/queue/RingQueue.go)
 1. [ioc](ioc)
 1. [parse tag](parser/tag/tag.go)
-1. [计算器](parser/calculator/calculator.go)
-1. [编辑距离](levenshtein/distance_test.go)
+1. [编译原理前端](parser)
+    * [计算器](parser/calculator/)
+    * [go tag](parser/tag)
+1. [编辑距离](levenshtein/)
+1. [go slice通用方法](slice/)
+1. [数据结构](algorithms/)
+    * [环形队列](algorithms/queue)
+    * [前缀树](algorithms/search/trie.go)
+    * [对分搜索](algorithms/search/binary.go)
+    * [栈](algorithms/stack)
+
 
 #### 缓存思考
 1. 过期策略用的是多个timer，即定时删除策略。
