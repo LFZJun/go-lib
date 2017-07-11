@@ -19,3 +19,7 @@ func Test2(t *testing.T) {
 		result = result.Next
 	}
 }
+
+func Test3(t *testing.T) {
+	fmt.Println(lengthOfLongestSubstring("dvdf"))
+}
