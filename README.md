@@ -18,12 +18,16 @@
     * [go tag](parser/tag)
 1. [编辑距离](levenshtein/)
 1. [go slice通用方法](slice/)
-1. [数据结构](algorithms/)
+1. [数据结构与算法](algorithms/)
     * [环形队列](algorithms/queue)
     * [前缀树](algorithms/search/trie.go)
     * [对分搜索](algorithms/search/binary.go)
     * [栈](algorithms/stack)
-
+    * [排序](algorithms/sort)
+1. [leetcode](leetcode)
+    * [1. Two Sum](leetcode/1.%20Two%20Sum.go)
+    * [2. Add Two Numbers](leetcode/2.%20Add%20Two%20Numbers.go)
+    * [3. Longest Substring Without Repeating Characters](leetcode/3.%20Longest%20Substring%20Without%20Repeating%20Characters.go)
 
 #### 缓存思考
 1. 过期策略用的是多个timer，即定时删除策略。
