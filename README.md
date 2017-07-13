@@ -31,6 +31,7 @@
     * [2. Add Two Numbers](leetcode/2.%20Add%20Two%20Numbers.go)
     * [3. Longest Substring Without Repeating Characters](leetcode/3.%20Longest%20Substring%20Without%20Repeating%20Characters.go)
     * [4. Median of Two Sorted Arrays](leetcode/4.%20Median%20of%20Two%20Sorted%20Arrays.go)
+    * [5. Longest Palindromic Substring](leetcode/5.%20Longest%20Palindromic%20Substring.go)
 
 ## 思考
 #### concurrentMap
