@@ -9,13 +9,12 @@ func twoSum(nums []int, target int) []int {
 	if len(nums) < 2 {
 		return []int{}
 	}
-	t := make(map[int]int)
+	t := make(map[int]int, len(nums))
 	for i, v := range nums {
 		if vv, ok := t[v]; ok {
 			return []int{vv, i}
-		} else {
-			t[target-v] = i
 		}
+		t[target-v] = i
 	}
 	return []int{}
 }
