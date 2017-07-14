@@ -27,12 +27,12 @@ type (
 	}
 )
 
-func (b *BeforeInitPlugin) Lookup(path string, sugar Sugar) (v interface{}) {
+func (b *BeforeInitPlugin) Lookup(path string, ice Ice) (v interface{}) {
 	if path == "*" {
-		sugar.Container().EachCup(func(cup *Cup) bool {
+		ice.Container().EachCup(func(cup *Cup) bool {
 			if beforeInitType, ok := cup.Water.(BeforeInitType); ok {
 				vv := beforeInitType.BeforeInit()
-				if reflectl.TypeEqual(sugar.Type(), reflect.TypeOf(vv)) {
+				if reflectl.TypeEqual(ice.Type(), reflect.TypeOf(vv)) {
 					v = vv
 					return true
 				}
@@ -44,7 +44,7 @@ func (b *BeforeInitPlugin) Lookup(path string, sugar Sugar) (v interface{}) {
 		}
 		return v
 	}
-	cup := sugar.Container().GetCup(path, beforeInitType)
+	cup := ice.Container().GetCup(path, beforeInitType)
 	if cup == nil {
 		panic(ErrorMissing.Panic(b.Prefix() + "." + path))
 	}

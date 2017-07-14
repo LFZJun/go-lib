@@ -17,11 +17,11 @@ type (
 )
 
 func TestPut(t *testing.T) {
-	Add(&Bar{
+	Put(&Bar{
 		Value: "dc",
 	})
 	foo := new(Foo)
-	Add(foo)
+	Put(foo)
 	Start()
 	//spew.Dump(foo)
 	//spew.Dump(GetWithName("Bar"))

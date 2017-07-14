@@ -10,30 +10,51 @@ import (
 
 func NewContainer() Container {
 	return &container{
-		cupMap:   make(map[string][]*Cup),
-		sugarMap: make(map[string][]Sugar),
-		plugins:  make(map[Lifecycle]Plugins),
+		cupMap:  make(map[string][]*Cup),
+		iceMap:  make(map[string][]Ice),
+		plugins: make(map[Lifecycle]Plugins),
 	}
 }
 
 type (
 	Container interface {
+		// 注册插件 根据lifecycle决定在哪一层被初始化
 		RegisterPlugin(lifecycle Lifecycle, p Plugin)
-		addSugar(sugar Sugar)
-		Add(water Water)
-		AddWithName(water Water, name string)
+
+		// 放入iceMap, 根据插件来注入
+		PutIce(ice Ice)
+
+		// 放入cupMap，water名字由容器的默认规则来决定
+		Put(water Water)
+
+		// 放入cupMap，water名字自定义
+		PutWithName(water Water, name string)
+
+		// 根据name获取 dropType类型的杯子
 		GetCup(name string, dropType reflect.Type) (h *Cup)
+
+		// 根据name获取 water
 		GetWaterWithName(name string) Water
+
+		// 深度遍历cupMap
 		EachCup(cupFunc CupFunc)
+
+		// 开始根据生命周期初始化
 		Start()
 	}
 
 	containPlugin interface {
 	}
+
 	container struct {
-		cupMap   map[string][]*Cup
-		sugarMap map[string][]Sugar
-		plugins  map[Lifecycle]Plugins
+		// 存放 water
+		cupMap map[string][]*Cup
+
+		// 存放 ice
+		iceMap map[string][]Ice
+
+		// 存放 插件
+		plugins map[Lifecycle]Plugins
 	}
 )
 
@@ -44,16 +65,16 @@ func (c *container) RegisterPlugin(lifecycle Lifecycle, p Plugin) {
 	c.plugins[lifecycle] = append(c.plugins[lifecycle], p)
 }
 
-func (c *container) addSugar(sugar Sugar) {
-	prefix := sugar.Prefix()
-	if _, has := c.sugarMap[prefix]; !has {
-		c.sugarMap[prefix] = []Sugar{sugar}
+func (c *container) PutIce(ice Ice) {
+	prefix := ice.Prefix()
+	if _, has := c.iceMap[prefix]; !has {
+		c.iceMap[prefix] = []Ice{ice}
 		return
 	}
-	c.sugarMap[prefix] = append(c.sugarMap[prefix], sugar)
+	c.iceMap[prefix] = append(c.iceMap[prefix], ice)
 }
 
-func (c *container) addWater(water Water, name string) {
+func (c *container) putWater(water Water, name string) {
 	v := reflect.ValueOf(water)
 	t := v.Type()
 	switch kind := t.Kind(); kind {
@@ -72,12 +93,12 @@ func (c *container) addWater(water Water, name string) {
 	}
 }
 
-func (c *container) Add(water Water) {
-	c.addWater(water, "")
+func (c *container) Put(water Water) {
+	c.putWater(water, "")
 }
 
-func (c *container) AddWithName(water Water, name string) {
-	c.addWater(water, name)
+func (c *container) PutWithName(water Water, name string) {
+	c.putWater(water, name)
 }
 
 func (c *container) GetWaterWithName(name string) Water {
@@ -127,12 +148,12 @@ func (c *container) loadPlugins(lifecycle Lifecycle) {
 	}
 	sort.Sort(plugins)
 	for _, plugin := range plugins {
-		sugars, ok := c.sugarMap[plugin.Prefix()]
+		ices, ok := c.iceMap[plugin.Prefix()]
 		if !ok {
 			continue
 		}
-		for _, sugar := range sugars {
-			sugar.LoadPlugin(plugin)
+		for _, ice := range ices {
+			ice.LoadPlugin(plugin)
 		}
 	}
 }

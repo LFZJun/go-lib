@@ -5,17 +5,18 @@ import (
 )
 
 type (
-	Sugar interface {
+	Ice interface {
+		// 获取 容器
 		Container() Container
+		// 获取 父级cup
 		ParentCup() *Cup
 		Value() reflect.Value
 		Type() reflect.Type
-		Water() Water
 		LoadPlugin(p Plugin)
 		Prefix() string
 	}
 
-	sugar struct {
+	ice struct {
 		classInfo reflect.StructField
 		parentCup *Cup
 		value     reflect.Value
@@ -23,30 +24,26 @@ type (
 	}
 )
 
-func (s *sugar) LoadPlugin(p Plugin) {
+func (s *ice) LoadPlugin(p Plugin) {
 	s.value.Set(reflect.ValueOf(p.Lookup(s.dropInfo.path, s)))
 }
 
-func (s *sugar) Container() Container {
+func (s *ice) Container() Container {
 	return s.parentCup.Container
 }
 
-func (s *sugar) ParentCup() *Cup {
+func (s *ice) ParentCup() *Cup {
 	return s.parentCup
 }
 
-func (s *sugar) Value() reflect.Value {
+func (s *ice) Value() reflect.Value {
 	return s.value
 }
 
-func (s *sugar) Type() reflect.Type {
+func (s *ice) Type() reflect.Type {
 	return s.value.Type()
 }
 
-func (s *sugar) Water() Water {
-	return s.value.Interface()
-}
-
-func (s *sugar) Prefix() string {
+func (s *ice) Prefix() string {
 	return s.dropInfo.prefix
 }

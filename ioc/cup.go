@@ -42,7 +42,7 @@ func (c *Cup) injectDependency() {
 		}
 		dropInfo := newDropInfo(tag, classInfo)
 		if !dropInfo.dependent {
-			c.Container.addSugar(&sugar{
+			c.Container.PutIce(&ice{
 				classInfo: classInfo,
 				value:     value,
 				dropInfo:  dropInfo,

@@ -11,12 +11,12 @@ var (
 	OpenPlugin       = true
 )
 
-func Add(water Water) {
-	defaultContainer.Add(water)
+func Put(water Water) {
+	defaultContainer.Put(water)
 }
 
-func AddWithName(water Water, name string) {
-	defaultContainer.AddWithName(water, name)
+func PutWithName(water Water, name string) {
+	defaultContainer.PutWithName(water, name)
 }
 
 func GetWithName(name string) Water {

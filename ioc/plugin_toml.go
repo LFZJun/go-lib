@@ -20,7 +20,7 @@ func tomlLoad() {
 
 type iToml toml.Tree
 
-func (i *iToml) Lookup(path string, sugar Sugar) interface{} {
+func (i *iToml) Lookup(path string, ice Ice) interface{} {
 	v := (*toml.Tree)(i).Get(path)
 	if v == nil {
 		panic(ErrorMissing.Panic("#." + path))

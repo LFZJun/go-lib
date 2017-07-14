@@ -2,7 +2,7 @@ package ioc
 
 type (
 	Plugin interface {
-		Lookup(path string, sugar Sugar) interface{}
+		Lookup(path string, ice Ice) interface{}
 		Prefix() string
 		Priority() int
 	}
