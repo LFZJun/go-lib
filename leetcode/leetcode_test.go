@@ -44,3 +44,7 @@ func Test5(t *testing.T) {
 func Test6(t *testing.T) {
 	fmt.Println(convert("PAYPALISHIRING", 4))
 }
+
+func Test7(t *testing.T) {
+	fmt.Println(reverse(2147483648))
+}

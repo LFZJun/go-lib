@@ -33,6 +33,7 @@
     * [4. Median of Two Sorted Arrays](leetcode/4.%20Median%20of%20Two%20Sorted%20Arrays.go)
     * [5. Longest Palindromic Substring](leetcode/5.%20Longest%20Palindromic%20Substring.go)
     * [6. ZigZag Conversion](leetcode/6.%20ZigZag%20Conversion.go)
+    * [7. Reverse Integer](leetcode/7.%20Reverse%20Integer.go)
 
 ## 思考
 #### concurrentMap
