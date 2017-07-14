@@ -40,3 +40,7 @@ func TestSym(t *testing.T) {
 func Test5(t *testing.T) {
 	fmt.Println(longestPalindrome("aba"))
 }
+
+func Test6(t *testing.T) {
+	fmt.Println(convert("PAYPALISHIRING", 4))
+}

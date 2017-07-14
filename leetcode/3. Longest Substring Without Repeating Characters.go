@@ -11,15 +11,18 @@ package leetcode
 //Given "pwwkew", the answer is "wke", with the length of 3. Note that the answer must be a substring, "pwke" is a subsequence and not a substring.
 
 func lengthOfLongestSubstring(s string) int {
-	var start, longest int
-	chars := []rune(s)
-	set := make(map[rune]int)
-	for i, r := range chars {
-		if v, ok := set[r]; ok && v >= start {
-			start = v + 1
+	start := -1
+	longest := 0
+	set := [256]int{}
+	for i := range set {
+		set[i] = -1
+	}
+	for i, r := range s {
+		if v := set[r]; v > start {
+			start = v
 		} else {
-			length := i - start + 1
-			if length >= longest {
+			length := i - start
+			if length > longest {
 				longest = length
 			}
 		}
