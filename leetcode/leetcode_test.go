@@ -48,3 +48,7 @@ func Test6(t *testing.T) {
 func Test7(t *testing.T) {
 	fmt.Println(reverse(2147483648))
 }
+
+func Test8(t *testing.T) {
+	fmt.Println(myAtoi("-2147483648"))
+}

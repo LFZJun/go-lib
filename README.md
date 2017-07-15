@@ -34,6 +34,7 @@
     * [5. Longest Palindromic Substring](leetcode/5.%20Longest%20Palindromic%20Substring.go)
     * [6. ZigZag Conversion](leetcode/6.%20ZigZag%20Conversion.go)
     * [7. Reverse Integer](leetcode/7.%20Reverse%20Integer.go)
+    * [8. String to Integer (atoi)](leetcode/8.%20String%20to%20Integer%20(atoi).go)
 
 ## 思考
 #### concurrentMap
