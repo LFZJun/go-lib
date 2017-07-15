@@ -52,3 +52,11 @@ func Test7(t *testing.T) {
 func Test8(t *testing.T) {
 	fmt.Println(myAtoi("-2147483648"))
 }
+
+func Test9(t *testing.T) {
+	fmt.Println(isPalindrome(121))
+}
+
+func Test10(t *testing.T) {
+	fmt.Println(isMatch("a", ".*..a*"))
+}
