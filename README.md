@@ -36,6 +36,8 @@
     * [7. Reverse Integer](leetcode/7.%20Reverse%20Integer.go)
     * [8. String to Integer (atoi)](leetcode/8.%20String%20to%20Integer%20(atoi).go)
     * [9. Palindrome Number](leetcode/9.%20Palindrome%20Number.go)
+    * [10. Regular Expression Matching](leetcode/10.%20Regular%20Expression%20Matching.go)
+    * [72. Edit Distance](leetcode/72.%20Edit%20Distance.go)
 
 ## 思考
 #### concurrentMap

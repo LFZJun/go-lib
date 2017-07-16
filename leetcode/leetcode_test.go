@@ -58,5 +58,9 @@ func Test9(t *testing.T) {
 }
 
 func Test10(t *testing.T) {
-	fmt.Println(isMatch("a", ".*..a*"))
+	fmt.Println(isMatch("ab", ".*c"))
+}
+
+func Test72(t *testing.T) {
+	fmt.Println(minDistance("abce", "cde"))
 }

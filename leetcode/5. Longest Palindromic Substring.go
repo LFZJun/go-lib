@@ -39,7 +39,6 @@ func sym(s string) bool {
 	return true
 }
 
-// 动态规划
 // 增加一个字符后有三种可能
 // 1. 回环长度+1 如 a + a
 // 2. 回环长度+2 如 ab + a
