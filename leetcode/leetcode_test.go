@@ -65,6 +65,14 @@ func Test11(t *testing.T) {
 	fmt.Println(maxArea([]int{1, 1}))
 }
 
+func Test12(t *testing.T) {
+	fmt.Println(intToRoman(112))
+}
+
+func Test13(t *testing.T) {
+	fmt.Println(romanToInt("IV"))
+}
+
 func Test72(t *testing.T) {
 	fmt.Println(minDistance("abce", "cde"))
 }
