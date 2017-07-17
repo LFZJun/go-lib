@@ -73,6 +73,10 @@ func Test13(t *testing.T) {
 	fmt.Println(romanToInt("IV"))
 }
 
+func Test14(t *testing.T) {
+	fmt.Println(longestCommonPrefix([]string{"a", "a", "a"}))
+}
+
 func Test72(t *testing.T) {
 	fmt.Println(minDistance("abce", "cde"))
 }
