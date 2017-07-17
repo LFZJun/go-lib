@@ -18,3 +18,23 @@ func twoSum(nums []int, target int) []int {
 	}
 	return []int{}
 }
+
+// 前提是有序
+func twoSumV0(nums []int, target int) []int {
+	if len(nums) < 2 {
+		return []int{}
+	}
+	left, right := 0, len(nums)-1
+	var t int
+	for left < right {
+		t = nums[left] + right
+		if t == target {
+			return []int{left, right}
+		} else if t < target {
+			left++
+		} else {
+			right--
+		}
+	}
+	return []int{}
+}

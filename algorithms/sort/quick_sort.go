@@ -35,3 +35,22 @@ func quickSortV2(l []int, start, end int) []int {
 	quickSortV2(l, t+1, end)
 	return l
 }
+
+func quickSort(l []int) {
+	if len(l) < 2 {
+		return
+	}
+	length := len(l)
+	index := 0
+	end := length - 1
+	pivot := l[end]
+	for i := 0; i < end; i++ {
+		if l[i] < pivot {
+			l[i], l[index] = l[index], l[i]
+			index++
+		}
+	}
+	l[index], l[end] = l[end], l[index]
+	quickSort(l[:index])
+	quickSort(l[index+1:])
+}

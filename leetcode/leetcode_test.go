@@ -6,7 +6,11 @@ import (
 )
 
 func Test1(t *testing.T) {
-	fmt.Println(twoSum([]int{1, 3, 2}, 1))
+	fmt.Println(twoSum([]int{1, 3, 2}, 3))
+}
+
+func Test1V1(t *testing.T) {
+	fmt.Println(twoSumV0([]int{1, 2, 3}, 3))
 }
 
 func Test2(t *testing.T) {
@@ -75,6 +79,10 @@ func Test13(t *testing.T) {
 
 func Test14(t *testing.T) {
 	fmt.Println(longestCommonPrefix([]string{"a", "a", "a"}))
+}
+
+func Test15(t *testing.T) {
+	fmt.Println(threeSum([]int{-1, 0, 1, 2, -1, -4}))
 }
 
 func Test72(t *testing.T) {
