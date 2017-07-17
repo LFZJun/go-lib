@@ -61,6 +61,10 @@ func Test10(t *testing.T) {
 	fmt.Println(isMatch("ab", ".*c"))
 }
 
+func Test11(t *testing.T) {
+	fmt.Println(maxArea([]int{1, 1}))
+}
+
 func Test72(t *testing.T) {
 	fmt.Println(minDistance("abce", "cde"))
 }
