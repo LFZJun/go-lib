@@ -89,6 +89,10 @@ func Test16(t *testing.T) {
 	fmt.Println(threeSumClosest([]int{-1, 2, 1, -4}, 1))
 }
 
+func Test17(t *testing.T) {
+	fmt.Println(letterCombinations("0234"))
+}
+
 func Test72(t *testing.T) {
 	fmt.Println(minDistance("abce", "cde"))
 }
