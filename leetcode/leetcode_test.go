@@ -3,6 +3,7 @@ package leetcode
 import (
 	"fmt"
 	"testing"
+	"github.com/LFZJun/go-lib/leetcode/origin"
 )
 
 func Test1(t *testing.T) {
@@ -91,6 +92,16 @@ func Test16(t *testing.T) {
 
 func Test17(t *testing.T) {
 	fmt.Println(letterCombinations("0234"))
+}
+
+func Test18(t *testing.T) {
+	fmt.Println(fourSum([]int{0,0,0,0}, 0))
+}
+
+func TestKsum(t *testing.T) {
+	var result [][]int
+	origin.KSum([]int{-3, -1, 0, 2, 4, 5}, 1, 2, []int{}, &result)
+	fmt.Println(result)
 }
 
 func Test72(t *testing.T) {

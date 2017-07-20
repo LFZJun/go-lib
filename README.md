@@ -44,6 +44,8 @@
     * [15. 3Sum](leetcode/15.%203Sum.go)
     * [16. 3Sum Closest](leetcode/16.%203Sum%20Closest.go)
     * [17. Letter Combinations of a Phone Number](leetcode/17.%20Letter%20Combinations%20of%20a%20Phone%20Number.go)
+    * [18. 4Sum](leetcode/18.%204Sum.go)
+    * [kSum](leetcode/origin/ksum.go)
     * [72. Edit Distance](leetcode/72.%20Edit%20Distance.go)
 
 ## 思考
