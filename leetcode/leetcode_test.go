@@ -95,13 +95,17 @@ func Test17(t *testing.T) {
 }
 
 func Test18(t *testing.T) {
-	fmt.Println(fourSum([]int{0,0,0,0}, 0))
+	fmt.Println(fourSum([]int{0, 0, 0, 0}, 0))
 }
 
 func TestKsum(t *testing.T) {
 	var result [][]int
 	origin.KSum([]int{-3, -1, 0, 2, 4, 5}, 1, 2, []int{}, &result)
 	fmt.Println(result)
+}
+
+func Test19(t *testing.T) {
+	fmt.Println(removeNthFromEnd(&listNode{1, &listNode{2, nil}}, 2))
 }
 
 func Test72(t *testing.T) {
