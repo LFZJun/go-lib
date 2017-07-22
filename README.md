@@ -47,6 +47,7 @@
     * [18. 4Sum](leetcode/18.%204Sum.go)
     * [kSum](leetcode/origin/ksum.go)
     * [19. Remove Nth Node From End of List](leetcode/19.%20Remove%20Nth%20Node%20From%20End%20of%20List.go)
+    * [20. Valid Parentheses](leetcode/20.%20Valid%20Parentheses.go)
     * [72. Edit Distance](leetcode/72.%20Edit%20Distance.go)
 
 ## 思考

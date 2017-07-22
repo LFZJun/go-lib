@@ -108,6 +108,10 @@ func Test19(t *testing.T) {
 	fmt.Println(removeNthFromEnd(&listNode{1, &listNode{2, nil}}, 2))
 }
 
+func Test20(t *testing.T) {
+	fmt.Println(isValid("(())"))
+}
+
 func Test72(t *testing.T) {
 	fmt.Println(minDistance("abce", "cde"))
 }

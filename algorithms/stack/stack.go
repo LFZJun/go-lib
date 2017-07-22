@@ -37,6 +37,15 @@ func (s *SimpleStack) Pop() interface{} {
 	return back
 }
 
+func (s *SimpleStack) PopByte() byte {
+	v := s.Pop()
+	vv, ok := v.(byte)
+	if !ok {
+		errorType(v)
+	}
+	return vv
+}
+
 func (s *SimpleStack) PopString() string {
 	v := s.Pop()
 	vv, ok := v.(string)
