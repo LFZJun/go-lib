@@ -2,9 +2,9 @@ package leetcode
 
 import (
 	"fmt"
-	"testing"
 	"github.com/LFZJun/go-lib/leetcode/origin"
 	"github.com/davecgh/go-spew/spew"
+	"testing"
 )
 
 func Test1(t *testing.T) {
@@ -115,6 +115,10 @@ func Test20(t *testing.T) {
 
 func Test21(t *testing.T) {
 	spew.Println(mergeTwoLists(&ListNode{2, nil}, &ListNode{1, nil}))
+}
+
+func Test23(t *testing.T) {
+	spew.Println(mergeKLists([]*ListNode{{2, nil}, {1, nil}}))
 }
 
 func Test72(t *testing.T) {
