@@ -22,12 +22,12 @@ package leetcode
 
 // 双指针 first 先走n个节点, second 再走，保证了他们永远间隔n-1, 当 first 走到头时, second代表倒数第n个
 // 边界条件 当 second 为第一个节点时，返回第二个节点即可
-func removeNthFromEnd(head *listNode, n int) *listNode {
+func removeNthFromEnd(head *ListNode, n int) *ListNode {
 	first, second := head, head
 	for i := n; i > 0; i-- {
 		first = first.Next
 	}
-	var prev *listNode
+	var prev *ListNode
 	for first != nil {
 		first = first.Next
 		prev = second

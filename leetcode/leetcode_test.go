@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 	"github.com/LFZJun/go-lib/leetcode/origin"
+	"github.com/davecgh/go-spew/spew"
 )
 
 func Test1(t *testing.T) {
@@ -16,8 +17,8 @@ func Test1V1(t *testing.T) {
 
 func Test2(t *testing.T) {
 	result := addTwoNumbers(
-		&listNode{5, nil},
-		&listNode{5, nil},
+		&ListNode{5, nil},
+		&ListNode{5, nil},
 	)
 	for result != nil {
 		fmt.Println(result.Val)
@@ -105,11 +106,15 @@ func TestKsum(t *testing.T) {
 }
 
 func Test19(t *testing.T) {
-	fmt.Println(removeNthFromEnd(&listNode{1, &listNode{2, nil}}, 2))
+	fmt.Println(removeNthFromEnd(&ListNode{1, &ListNode{2, nil}}, 2))
 }
 
 func Test20(t *testing.T) {
 	fmt.Println(isValid("(())"))
+}
+
+func Test21(t *testing.T) {
+	spew.Println(mergeTwoLists(&ListNode{2, nil}, &ListNode{1, nil}))
 }
 
 func Test72(t *testing.T) {

@@ -7,16 +7,11 @@ package leetcode
 //Input: (2 -> 4 -> 3) + (5 -> 6 -> 4)
 //Output: 7 -> 0 -> 8
 
-type listNode struct {
-	Val  int
-	Next *listNode
-}
-
-func addTwoNumbers(l1 *listNode, l2 *listNode) *listNode {
+func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 	t := 0
-	node := &listNode{}
+	node := &ListNode{}
 	root := node
-	var end *listNode
+	var end *ListNode
 	for l1 != nil || l2 != nil || t != 0 {
 		if l1 != nil {
 			t += l1.Val
@@ -29,7 +24,7 @@ func addTwoNumbers(l1 *listNode, l2 *listNode) *listNode {
 		val := t % 10
 		t /= 10
 		node.Val = val
-		node.Next = &listNode{}
+		node.Next = &ListNode{}
 		end = node
 		node = node.Next
 	}
