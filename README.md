@@ -51,6 +51,7 @@
     * [21. Merge Two Sorted Lists](leetcode/21.%20Merge%20Two%20Sorted%20Lists.go)
     * [22. Generate Parentheses](leetcode/22.%20Generate%20Parentheses.go)
     * [23. Merge k Sorted Lists](leetcode/23.%20Merge%20k%20Sorted%20Lists.go)
+    * [24. Swap Nodes in Pairs](leetcode/24.%20Swap%20Nodes%20in%20Pairs.go)
     * [72. Edit Distance](leetcode/72.%20Edit%20Distance.go)
 
 ## 思考
