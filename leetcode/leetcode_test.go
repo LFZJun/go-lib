@@ -121,6 +121,10 @@ func Test23(t *testing.T) {
 	spew.Println(mergeKLists([]*ListNode{{2, nil}, {1, nil}}))
 }
 
+func Test26(t *testing.T) {
+	fmt.Println(removeDuplicates([]int{1, 1, 2}))
+}
+
 func Test72(t *testing.T) {
 	fmt.Println(minDistance("abce", "cde"))
 }
