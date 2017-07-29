@@ -125,6 +125,14 @@ func Test26(t *testing.T) {
 	fmt.Println(removeDuplicates([]int{1, 1, 2}))
 }
 
+func Test27(t *testing.T) {
+	fmt.Println(removeElement([]int{3, 2, 2, 3}, 3))
+}
+
+func Test28(t *testing.T) {
+	fmt.Println(strStr("a", "a"))
+}
+
 func Test72(t *testing.T) {
 	fmt.Println(minDistance("abce", "cde"))
 }

@@ -3,12 +3,12 @@ package search
 func IndexOf(src, substring string) []int {
 	s, ss := []rune(src), []rune(substring)
 	ls, lss := len(s), len(ss)
-	for i := range s {
+	if ls|lss == 0 {
+		return []int{0, 0}
+	}
+	end := ls - lss + 1
+	for i := 0; i < end; i++ {
 		var t int
-		end := i + lss
-		if end > ls {
-			return nil
-		}
 		for ii, rr := range ss {
 			if s[i+ii] != rr {
 				break
