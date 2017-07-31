@@ -5,27 +5,21 @@ import (
 	"reflect"
 )
 
-func GroupBy(src interface{}, hash func(h interface{}) interface{}, cmp func(i interface{}, j interface{}) bool) error {
+func GroupBy(src interface{}, hash func(h interface{}) interface{}) error {
 	destRef, err := reflectl.IsSlicePtr(src)
 	if err != nil {
 		return err
 	}
-	set := make(map[interface{}]interface{})
 	length := destRef.Len()
+	set := make(map[interface{}]interface{}, length)
+	tempSlice := reflect.MakeSlice(destRef.Type(), 0, length)
 	for i := 0; i < length; i++ {
 		v := destRef.Index(i).Interface()
 		id := hash(v)
-		if vv, has := set[id]; has {
-			if cmp(v, vv) {
-				set[id] = v
-			}
-		} else {
+		if _, has := set[id]; !has {
+			tempSlice = reflect.Append(tempSlice, reflect.ValueOf(v))
 			set[id] = v
 		}
-	}
-	tempSlice := reflect.MakeSlice(destRef.Type(), 0, 0)
-	for _, v := range set {
-		tempSlice = reflect.Append(tempSlice, reflect.ValueOf(v))
 	}
 	destRef.Set(tempSlice)
 	return nil

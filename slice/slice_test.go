@@ -15,10 +15,7 @@ func TestGroupBy(t *testing.T) {
 	hashFunc := func(h interface{}) interface{} {
 		return h.(foo).Id
 	}
-	cmpFunc := func(i interface{}, j interface{}) bool {
-		return i.(foo).Value < j.(foo).Value
-	}
-	err := GroupBy(&srcFoo, hashFunc, cmpFunc)
+	err := GroupBy(&srcFoo, hashFunc)
 	if err != nil {
 		fmt.Println(err)
 		return
