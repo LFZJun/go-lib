@@ -9,6 +9,7 @@ func errorType(i interface{}) {
 	panic(fmt.Sprintf("类型错误 %v %v", reflect.TypeOf(i), i))
 }
 
+// 链表的话 list.New()
 func NewSimpleStack() *SimpleStack {
 	return new(SimpleStack)
 }
