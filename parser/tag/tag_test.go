@@ -1,8 +1,8 @@
 package tag
 
 import (
-	"testing"
 	"github.com/davecgh/go-spew/spew"
+	"testing"
 )
 
 func TestStructTag_Parse(t *testing.T) {

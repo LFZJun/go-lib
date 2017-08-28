@@ -2,8 +2,8 @@ package reflectl
 
 import (
 	"fmt"
-	"testing"
 	"github.com/cocotyty/summer"
+	"testing"
 )
 
 func TestName(t *testing.T) {

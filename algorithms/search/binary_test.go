@@ -1,8 +1,8 @@
 package search
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func TestBinary(t *testing.T) {

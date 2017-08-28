@@ -1,10 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"sync"
 	"testing"
 	"time"
-	"fmt"
 )
 
 func TestName(t *testing.T) {

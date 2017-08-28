@@ -1,6 +1,6 @@
 package decorator
 
-type Ramen struct {}
+type Ramen struct{}
 
 func (p Ramen) Description() string {
 	return "ramen"

@@ -1,8 +1,8 @@
 package sort
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func TestQuickSortV1(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 )
 
 // worker implement
-type FooPizza struct {}
+type FooPizza struct{}
 
 func (fp *FooPizza) Prepare() {
 	fmt.Println("foo pizza prepare")

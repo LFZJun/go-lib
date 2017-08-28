@@ -3,10 +3,10 @@ package calculator
 import (
 	"bytes"
 	"fmt"
+	"github.com/LFZJun/go-lib/algorithms/stack"
 	"regexp"
 	"strconv"
 	"strings"
-	"github.com/LFZJun/go-lib/algorithms/stack"
 )
 
 const (

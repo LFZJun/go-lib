@@ -4,7 +4,6 @@ import (
 	"fmt"
 )
 
-
 type Light struct {
 	Site string
 }
@@ -16,5 +15,3 @@ func (l *Light) On() {
 func (l *Light) Off() {
 	fmt.Println(l.Site + " light turn off")
 }
-
-

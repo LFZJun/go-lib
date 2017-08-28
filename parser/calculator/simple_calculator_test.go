@@ -2,8 +2,8 @@ package calculator
 
 import (
 	"fmt"
-	"testing"
 	"strings"
+	"testing"
 )
 
 func TestCalculator_Evaluate(t *testing.T) {

@@ -1,8 +1,8 @@
 package ioc
 
 import (
-	"reflect"
 	"github.com/LFZJun/go-lib/reflectl"
+	"reflect"
 )
 
 func init() {

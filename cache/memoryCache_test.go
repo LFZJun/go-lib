@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"sync"
 	"testing"
 	"time"
 )
@@ -22,6 +23,16 @@ func BenchmarkTTLCache_SetDeadline(b *testing.B) {
 		for pb.Next() {
 			now := time.Now().String()
 			c.SetDeadline(now, now, time.Now().Add(time.Second*10))
+		}
+	})
+}
+
+func BenchmarkSyncMap(b *testing.B) {
+	m := sync.Map{}
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			now := time.Now().String()
+			m.Store(now, now)
 		}
 	})
 }

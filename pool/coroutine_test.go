@@ -2,9 +2,9 @@ package pool
 
 import (
 	"fmt"
+	"runtime"
 	"testing"
 	"time"
-	"runtime"
 )
 
 func TestNewCoroutinePool(t *testing.T) {
