@@ -1,6 +1,7 @@
 package pool
 
 import (
+	"container/list"
 	"sync"
 )
 
@@ -14,7 +15,7 @@ type (
 	}
 
 	Buf struct {
-		queue []Task
+		queue *list.List
 		lock  sync.Mutex
 	}
 
@@ -29,19 +30,19 @@ type (
 
 func (b *Buf) Push(task Task) {
 	b.lock.Lock()
-	b.queue = append(b.queue, task)
+	b.queue.PushBack(task)
 	b.lock.Unlock()
 }
 
 func (b *Buf) Pop() (Task, bool) {
 	b.lock.Lock()
 	defer b.lock.Unlock()
-	if len(b.queue) == 0 {
+	if b.queue.Len() == 0 {
 		return nil, false
 	}
-	t := b.queue[0]
-	b.queue = b.queue[1:]
-	return t, true
+	front := b.queue.Front()
+	task := b.queue.Remove(front).(Task)
+	return task, true
 }
 
 func (c *coroutinePool) coroutineRun() {
@@ -93,9 +94,7 @@ func (c *coroutinePool) Close() {
 }
 
 func initCoroutinePool(pool *coroutinePool) {
-	pool.buf = &Buf{
-		queue: make([]Task, 0, pool.Size),
-	}
+	pool.buf = &Buf{queue: list.New()}
 	pool.auto = make(chan struct{}, 1)
 	for i := 0; i < pool.Size; i++ {
 		// 创建goroutine
