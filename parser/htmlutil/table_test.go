@@ -28,14 +28,6 @@ func BenchmarkParseTable(b *testing.B) {
 	doc, _ := goquery.NewDocumentFromReader(bytes.NewReader([]byte(foo)))
 	table := doc.Find("table")
 	for i := 0; i < b.N; i++ {
-		parseTable(table)
-	}
-}
-
-func BenchmarkParseTable2(b *testing.B) {
-	doc, _ := goquery.NewDocumentFromReader(bytes.NewReader([]byte(foo)))
-	table := doc.Find("table")
-	for i := 0; i < b.N; i++ {
 		ParseTable(table)
 	}
 }
