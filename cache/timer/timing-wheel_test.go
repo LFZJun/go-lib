@@ -14,12 +14,14 @@ func TestNewTimingWheel(t *testing.T) {
 	timing := NewTimingWheel(time.Millisecond*10, 128)
 	start := time.Now()
 	timing.After(
-		NewTask(time.Millisecond*1500,
-			func() {
+		&Task{
+			Timeout: time.Millisecond * 1500,
+			Work: func() {
 				end := time.Now()
 				fmt.Println(end.Sub(start))
 				fmt.Println(runtime.NumGoroutine())
 				wait.Done()
-			}))
+			},
+		})
 	wait.Wait()
 }

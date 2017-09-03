@@ -8,8 +8,8 @@ import (
 
 type (
 	Task struct {
-		timeout time.Duration
-		work    func()
+		Timeout time.Duration
+		Work    func()
 		index   *list.Element
 		count   uint
 		pos     uint
@@ -48,7 +48,7 @@ func (s *Slot) Walk() {
 		if task := cur.Value.(*Task); task.count > 0 {
 			task.count -= 1
 		} else {
-			task.work()
+			task.Work()
 			s.tasks.Remove(task.index)
 		}
 	}
@@ -79,7 +79,7 @@ func (t *TimingWheel) cal(timeout time.Duration) (pos uint, count uint) {
 }
 
 func (t *TimingWheel) After(task *Task) *Task {
-	task.pos, task.count = t.cal(task.timeout)
+	task.pos, task.count = t.cal(task.Timeout)
 	t.slots[task.pos].Put(task)
 	return task
 }
@@ -95,13 +95,6 @@ func (t *TimingWheel) onTick() {
 
 func (t *TimingWheel) Stop() {
 	close(t.quit)
-}
-
-func NewTask(timeout time.Duration, work func()) *Task {
-	return &Task{
-		timeout: timeout,
-		work:    work,
-	}
 }
 
 func NewTimingWheel(interval time.Duration, slotsNum uint) (t *TimingWheel) {

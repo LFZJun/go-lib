@@ -103,14 +103,17 @@ func (tc *TTLCache) SetTimeout(key string, value interface{}, timeout time.Durat
 	tc.segments[index].SetTimeout(key, value, timeout)
 }
 
+// deprecated
 func NewMapMutex() *SafeMap {
 	return &SafeMap{Map: make(map[string]*Store)}
 }
 
+// deprecated
 func NewTTL() *Segment {
 	return &Segment{NewMapMutex()}
 }
 
+// deprecated
 func NewTTLCache(size uint32) *TTLCache {
 	t := make([]*Segment, 0, size)
 	for i := 0; i < int(size); i++ {

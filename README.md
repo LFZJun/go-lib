@@ -7,8 +7,8 @@
     * [命令模式](gof/command)
     * [适配器模式](gof/adapter)
 1. [cache](cache)
-    * [concurrentMap](cache/memoryCache.go) ([优化方法](./README.md#17))
     * [timing wheel](cache/timer/timing-wheel.go)
+    * [ccache](cache/ccache.go)
 1. [池](pool)
     * [连接池](pool/conncet-pool.go) (不能存map，因为复用的时候不会删除entry)
     * [协程池](pool/coroutine-pool.go) (只实现了size，没实现min, max，凑活用，hhh)
@@ -28,15 +28,12 @@
         * [归并排序](algorithms/sort/merge_sort.go)
         * [快速排序](algorithms/sort/quick_sort.go)
     * [编辑距离](algorithms/levenshtein/)
+1. [deprecated](deprecated)
+    * [cache](deprecated/cache/lowCache.go)[思考](deprecated/cache/README.md)
 
-## 思考
-#### concurrentMap
-1. 过期策略用的是多个timer，即定时删除策略。
-2. 定时策略很尴尬，一个timer一个goroutine。当timer过多时会导致sched调度过多，性能严重下降。
-3. 优化方向是，改变定时策略，采用懒汉策略和定期删除策略。
-> 即get时对比时间辍，删除过期数据。
+## 说明
+### 目录
+公共方法库
+### deprecated
+[deprecated](deprecated)里面包含了部分代码的不成熟实现
 
-> (单向链表)同时有且只有一个定时器，定期遍历，删除过期数据。这个定时器，有个致命点就是当数据过多时，遍历时间过长。
-
-> (Timing wheel)所以可以试试环形定时器，一个环像一个时钟，假设！一圈一个小时，一刻度1毫秒，一个刻度对应一个任务slot即任务队列。每次插入一个数据都是转换成对应的插槽，插入该任务队列。这样保证了每次定期操作不会有过多的无效操作，比如没有数据过期但是仍然遍历了全部数据。
-4. 数据存储方面我没有优化。
