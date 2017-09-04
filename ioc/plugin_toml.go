@@ -4,18 +4,18 @@ import (
 	"io"
 
 	"github.com/pelletier/go-toml"
+	"sync"
 )
 
 var (
-	loadTomlPlugin = false
-	tomlPlugin     = new(iToml)
+	loadTomlPluginOnce = sync.Once{}
+	tomlPlugin         = new(iToml)
 )
 
 func tomlLoad() {
-	if !loadTomlPlugin {
+	loadTomlPluginOnce.Do(func() {
 		RegisterPlugin(BeforeInit, tomlPlugin)
-		loadTomlPlugin = true
-	}
+	})
 }
 
 type iToml toml.Tree
