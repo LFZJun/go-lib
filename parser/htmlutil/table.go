@@ -11,7 +11,20 @@ type (
 		Text  string
 		Value string
 	}
+	table [][]string
+	kv map[string]string
 )
+
+func (k *kv) Set(key string, v string) {
+	(*k)[key] = v
+}
+
+func (k *kv) Get(key string) string {
+	if v, has := (*k)[key]; has {
+		return v
+	}
+	return ""
+}
 
 func tx2Content(tx *goquery.Selection) content {
 	value, _ := tx.Find("input").Attr("value")
@@ -29,7 +42,22 @@ func (c content) String() string {
 	return strings.TrimSpace(c.Text)
 }
 
-func ParseTable(table *goquery.Selection) (matrix [][]string) {
+func (t table) FirstHeadKV() (p []kv) {
+	if len(t) < 2 {
+		return
+	}
+	headline := t[0]
+	for i := 1; i < len(t); i++ {
+		pp := kv{}
+		for j := 0; j < len(t[i]); j++ {
+			pp.Set(headline[j], t[i][j])
+		}
+		p = append(p, pp)
+	}
+	return
+}
+
+func ParseTable(table *goquery.Selection) (matrix table) {
 	trs := table.Find("tr")
 	switch length := trs.Length(); length {
 	case 0:
