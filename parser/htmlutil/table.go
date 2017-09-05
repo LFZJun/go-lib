@@ -7,35 +7,37 @@ import (
 )
 
 type (
-	content struct {
-		Text  string
-		Value string
+	element struct {
+		Text      string
+		Value     string
+		Selection *goquery.Selection
 	}
-	table [][]string
-	kv map[string]string
+	table [][]*element
+	kv    map[string]*element
 )
 
-func (k *kv) Set(key string, v string) {
+func (k *kv) Set(key string, v *element) {
 	(*k)[key] = v
 }
 
-func (k *kv) Get(key string) string {
+func (k *kv) Get(key string) *element {
 	if v, has := (*k)[key]; has {
 		return v
 	}
-	return ""
+	return &element{}
 }
 
-func tx2Content(tx *goquery.Selection) content {
+func tx2Content(tx *goquery.Selection) *element {
 	value, _ := tx.Find("input").Attr("value")
 	txt := strings.TrimSpace(tx.Text())
-	return content{
-		Text:  txt,
-		Value: value,
+	return &element{
+		Text:      txt,
+		Value:     value,
+		Selection: tx,
 	}
 }
 
-func (c content) String() string {
+func (c element) String() string {
 	if v := strings.TrimSpace(c.Value); v != "" {
 		return v
 	}
@@ -50,7 +52,7 @@ func (t table) FirstHeadKV() (p []kv) {
 	for i := 1; i < len(t); i++ {
 		pp := kv{}
 		for j := 0; j < len(t[i]); j++ {
-			pp.Set(headline[j], t[i][j])
+			pp.Set(headline[j].String(), t[i][j])
 		}
 		p = append(p, pp)
 	}
@@ -63,23 +65,23 @@ func ParseTable(table *goquery.Selection) (matrix table) {
 	case 0:
 		return
 	case 1:
-		matrix = make([][]string, 1)
-		var rowOne []string
+		matrix = make([][]*element, 1)
+		var rowOne []*element
 		// trs = tr
 		trs.Children().Each(func(col int, tx *goquery.Selection) {
 			c := tx2Content(tx)
 			if colspan, has := tx.Attr("colspan"); has {
 				colspanInt, _ := strconv.Atoi(colspan)
 				for i := 0; i < colspanInt; i++ {
-					rowOne = append(rowOne, c.String())
+					rowOne = append(rowOne, c)
 				}
 			} else {
-				rowOne = append(rowOne, c.String())
+				rowOne = append(rowOne, c)
 			}
 		})
 		matrix[0] = rowOne
 	default:
-		matrix = make([][]string, length)
+		matrix = make([][]*element, length)
 		trs.Each(func(row int, tr *goquery.Selection) {
 			tr.Children().Each(func(col int, tx *goquery.Selection) {
 				rowspanInt, colspanInt := 1, 1
@@ -93,7 +95,7 @@ func ParseTable(table *goquery.Selection) (matrix table) {
 				for i := rowspanInt - 1; i >= 0; i-- {
 					it := row + i
 					for j := 0; j < colspanInt; j++ {
-						matrix[it] = append(matrix[it], c.String())
+						matrix[it] = append(matrix[it], c)
 					}
 				}
 			})
