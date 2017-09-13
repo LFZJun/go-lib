@@ -30,8 +30,11 @@ type (
 		// 放入cupMap，water名字自定义
 		PutWithName(water Water, name string)
 
-		// 根据name获取 dropType类型的杯子
-		GetCup(name string, dropType reflect.Type) (h *Cup)
+		// 获取除了excludedNames之外 dropType类型的cup
+		GetCup(dropType reflect.Type, excludedNames ...string) (h *Cup)
+
+		// 根据name获取 dropType类型的cup
+		GetCupWithName(name string, dropType reflect.Type) (h *Cup)
 
 		// 根据name获取 water
 		GetWaterWithName(name string) Water
@@ -79,11 +82,11 @@ func (c *container) putWater(water Water, name string) {
 	t := v.Type()
 	switch kind := t.Kind(); kind {
 	case reflect.Ptr:
-		if name == "" {
-			name = reflectl.GetValueDefaultName(v)
-		}
 	default:
-		panic(ErrorPtr.Panic(kind))
+		panic(ErrorType.Panic(kind))
+	}
+	if name == "" {
+		name = reflectl.GetValueDefaultName(v)
 	}
 	logger.Output(4, fmt.Sprintf("放入 %v", name))
 	// 额，没想到并发的场景所以没加锁
@@ -113,7 +116,7 @@ func (c *container) GetWaterWithName(name string) Water {
 	return nil
 }
 
-func (c *container) GetCup(name string, t reflect.Type) (h *Cup) {
+func (c *container) GetCupWithName(name string, t reflect.Type) (h *Cup) {
 	if cups, found := c.cupMap[name]; found {
 		for _, cup := range cups {
 			if reflectl.TypeEqual(t, cup.Class) {
@@ -124,10 +127,49 @@ func (c *container) GetCup(name string, t reflect.Type) (h *Cup) {
 	return nil
 }
 
+func (c *container) GetCup(t reflect.Type, excludedNames ...string) (h *Cup) {
+	switch len(excludedNames) {
+	case 0:
+		c.EachCup(func(name string, cup *Cup) bool {
+			if reflectl.TypeEqual(t, cup.Class) {
+				h = cup
+				return true
+			}
+			return false
+		})
+	case 1:
+		c.EachCup(func(name string, cup *Cup) bool {
+			if name != excludedNames[0] {
+				fmt.Println(t, cup.Class)
+				if reflectl.TypeEqual(t, cup.Class) {
+					h = cup
+					return true
+				}
+			}
+			return false
+		})
+	default:
+		s := make(map[string]struct{})
+		for _, v := range excludedNames {
+			s[v] = struct{}{}
+		}
+		c.EachCup(func(name string, cup *Cup) bool {
+			if _, has := s[name]; !has {
+				if reflectl.TypeEqual(t, cup.Class) {
+					h = cup
+					return true
+				}
+			}
+			return false
+		})
+	}
+	return
+}
+
 func (c *container) EachCup(cupFunc CupFunc) {
-	for _, v := range c.cupMap {
+	for k, v := range c.cupMap {
 		for _, vv := range v {
-			if cupFunc(vv) {
+			if cupFunc(k, vv) {
 				return
 			}
 		}
@@ -135,7 +177,7 @@ func (c *container) EachCup(cupFunc CupFunc) {
 }
 
 func (c *container) injectDependency() {
-	c.EachCup(func(cup *Cup) bool {
+	c.EachCup(func(name string, cup *Cup) bool {
 		cup.injectDependency()
 		return false
 	})
@@ -168,7 +210,7 @@ func (c *container) Start() {
 
 func (c *container) init() {
 	set := make(CupSet)
-	c.EachCup(func(cup *Cup) bool {
+	c.EachCup(func(name string, cup *Cup) bool {
 		cup.init(set)
 		return false
 	})
@@ -176,7 +218,7 @@ func (c *container) init() {
 
 func (c *container) ready() {
 	set := make(CupSet)
-	c.EachCup(func(cup *Cup) bool {
+	c.EachCup(func(name string, cup *Cup) bool {
 		cup.ready(set)
 		return false
 	})

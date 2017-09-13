@@ -5,7 +5,8 @@ import (
 )
 
 type (
-	CupFunc func(cup *Cup) bool
+	// break if return true
+	CupFunc func(name string, cup *Cup) bool
 	CupSet  map[*Cup]struct{}
 
 	Cup struct {
@@ -30,6 +31,10 @@ func newCup(water Water, typee reflect.Type, value reflect.Value, container *con
 func (c *Cup) injectDependency() {
 	classElem := c.Class.Elem()
 	valueElem := c.Value.Elem()
+	// mustBe(Struct)
+	if classElem.Kind() != reflect.Struct {
+		return
+	}
 	for num := valueElem.NumField() - 1; num >= 0; num-- {
 		classInfo := classElem.Field(num)
 		value := valueElem.Field(num)
@@ -50,9 +55,13 @@ func (c *Cup) injectDependency() {
 			})
 			continue
 		}
-		cup := c.Container.GetCup(dropInfo.name, value.Type())
+		cup := c.Container.GetCupWithName(dropInfo.name, value.Type())
 		if cup == nil {
-			panic(ErrorMissing.Panic(value.Type()))
+			otherCup := c.Container.GetCup(value.Type(), dropInfo.name)
+			if otherCup == nil {
+				panic(ErrorMissing.Panic(value.Type()))
+			}
+			cup = otherCup
 		}
 		c.Dependents = append(c.Dependents, cup)
 		value.Set(cup.Value)

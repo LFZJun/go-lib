@@ -3,16 +3,19 @@ package ioc
 import (
 	"github.com/LFZJun/go-lib/reflectl"
 	"reflect"
+	"sync"
 )
 
+var onceBefore = sync.Once{}
+
 func init() {
-	if OpenPlugin {
-		LoadBeforeInitPlugin()
-	}
+	LoadBeforeInitPlugin()
 }
 
 func LoadBeforeInitPlugin() {
-	RegisterPlugin(BeforeInit, new(BeforeInitPlugin))
+	onceBefore.Do(func() {
+		RegisterPlugin(BeforeInit, new(BeforeInitPlugin))
+	})
 }
 
 var (
@@ -29,7 +32,7 @@ type (
 
 func (b *BeforeInitPlugin) Lookup(path string, ice Ice) (v interface{}) {
 	if path == "*" {
-		ice.Container().EachCup(func(cup *Cup) bool {
+		ice.Container().EachCup(func(name string, cup *Cup) bool {
 			if beforeInitType, ok := cup.Water.(BeforeInitType); ok {
 				vv := beforeInitType.BeforeInit()
 				if reflectl.TypeEqual(ice.Type(), reflect.TypeOf(vv)) {
@@ -44,7 +47,7 @@ func (b *BeforeInitPlugin) Lookup(path string, ice Ice) (v interface{}) {
 		}
 		return v
 	}
-	cup := ice.Container().GetCup(path, beforeInitType)
+	cup := ice.Container().GetCupWithName(path, beforeInitType)
 	if cup == nil {
 		panic(ErrorMissing.Panic(b.Prefix() + "." + path))
 	}

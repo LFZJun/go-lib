@@ -1,6 +1,8 @@
 package reflectl
 
-import "reflect"
+import (
+	"reflect"
+)
 
 // Deref is Indirect for reflect.Types
 func Deref(t reflect.Type) reflect.Type {

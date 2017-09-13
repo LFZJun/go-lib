@@ -5,20 +5,18 @@ import "fmt"
 type errorIoc int
 
 const (
-	ErrorPtr errorIoc = iota
+	ErrorType errorIoc = iota
 	ErrorMissing
 	ErrorUnexported
 	ErrorTagDotIndex
-	ErrorTagPtr
 	ErrorStopIterator
 )
 
 var errorString = [...]string{
-	ErrorPtr:          "请传入Ptr \n当前类型 %v",
+	ErrorType:         "请传入Ptr \n当前basic type %v",
 	ErrorMissing:      "找不到 %v",
 	ErrorUnexported:   "%v: %v %v %v 需要大写变量首字母 mustBeExported",
 	ErrorTagDotIndex:  "错误field: %v %v `%v`  %v",
-	ErrorTagPtr:       "错误field: %v %v `%v` 类型必须是Ptr",
 	ErrorStopIterator: "停止循环",
 }
 

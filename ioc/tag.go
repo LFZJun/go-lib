@@ -31,9 +31,6 @@ func newDropInfo(tagIoc string, class reflect.StructField) *dropInfo {
 		si.name = reflectl.GetTypeDefaultName(class.Type)
 		return si
 	}
-	if class.Type.Kind() != reflect.Ptr {
-		panic(ErrorTagPtr.Panic(class.Name, class.Type, class.Tag))
-	}
 	// 1.
 	if tagIoc == "*" {
 		si.auto = true

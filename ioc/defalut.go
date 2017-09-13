@@ -8,7 +8,6 @@ import (
 var (
 	logger           = log.New(os.Stdout, "[ioc] ", log.Lshortfile)
 	defaultContainer = NewContainer()
-	OpenPlugin       = true
 )
 
 func Put(water Water) {
