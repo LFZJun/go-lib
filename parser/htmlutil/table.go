@@ -4,102 +4,101 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"strconv"
 	"strings"
+	"container/list"
 )
 
-type (
-	element struct {
-		Text      string
-		Value     string
-		Selection *goquery.Selection
-	}
-	table [][]*element
-	kv    map[string]*element
-)
-
-func (k *kv) Set(key string, v *element) {
-	(*k)[key] = v
+type Ele struct {
+	Row     int           `json:"row"`
+	Col     int           `json:"col"`
+	Text    string        `json:"text"`
+	Rowspan int           `json:"rowspan"`
+	Colspan int           `json:"colspan"`
+	Index   *list.Element `json:"_"`
 }
 
-func (k *kv) Get(key string) *element {
-	if v, has := (*k)[key]; has {
-		return v
-	}
-	return &element{}
+func (e Ele) shallowClone() Ele {
+	return e
 }
 
-func tx2Content(tx *goquery.Selection) *element {
-	value, _ := tx.Find("input").Attr("value")
-	txt := strings.TrimSpace(tx.Text())
-	return &element{
-		Text:      txt,
-		Value:     value,
-		Selection: tx,
-	}
+func (e Ele) IsRowspan() bool {
+	return e.Rowspan > 1
 }
 
-func (c element) String() string {
-	if v := strings.TrimSpace(c.Value); v != "" {
-		return v
-	}
-	return strings.TrimSpace(c.Text)
+func (e Ele) IsColspan() bool {
+	return e.Colspan > 1
 }
 
-func (t table) FirstHeadKV() (p []kv) {
-	if len(t) < 2 {
-		return
-	}
-	headline := t[0]
-	for i := 1; i < len(t); i++ {
-		pp := kv{}
-		for j := 0; j < len(t[i]); j++ {
-			pp.Set(headline[j].String(), t[i][j])
+func insert(list2 *list.List, index int, value interface{}) *list.Element {
+	if index < list2.Len() {
+		ele := list2.Front()
+		for i := 0; i < index; i++ {
+			ele = ele.Next()
 		}
-		p = append(p, pp)
+		return list2.InsertBefore(value, ele)
 	}
-	return
+	return list2.PushBack(value)
 }
 
-func ParseTable(table *goquery.Selection) (matrix table) {
+func solveColspan(ele *Ele, m *[]*list.List) {
+	currentRow := (*m)[ele.Row]
+	cp := ele.shallowClone()
+	cp.Colspan -= 1
+	newEle := currentRow.InsertAfter(&cp, ele.Index)
+	for c := newEle; c != nil; c = c.Next() {
+		c.Value.(*Ele).Col += 1
+	}
+}
+
+func solveRowspan(ele *Ele, m *[]*list.List) {
+	offset := ele.Row + 1
+	nextRow := (*m)[offset]
+	cp := ele.shallowClone()
+	cp.Row = offset
+	cp.Rowspan -= 1
+	cp.Colspan = 1
+	newEle := insert(nextRow, cp.Col, &cp)
+	for ; newEle != nil; newEle = newEle.Next() {
+		newEle.Value.(*Ele).Col += 1
+	}
+}
+
+func ParseTable(table *goquery.Selection) (matrix [][]string) {
 	trs := table.Find("tr")
-	switch length := trs.Length(); length {
-	case 0:
+	if trs.Length() == 0 {
 		return
-	case 1:
-		matrix = make([][]*element, 1)
-		var rowOne []*element
-		// trs = tr
-		trs.Children().Each(func(col int, tx *goquery.Selection) {
-			c := tx2Content(tx)
-			if colspan, has := tx.Attr("colspan"); has {
-				colspanInt, _ := strconv.Atoi(colspan)
-				for i := 0; i < colspanInt; i++ {
-					rowOne = append(rowOne, c)
-				}
-			} else {
-				rowOne = append(rowOne, c)
+	}
+	var m []*list.List
+	trs.Each(func(row int, tr *goquery.Selection) {
+		it := list.New()
+		tr.Children().Each(func(col int, tx *goquery.Selection) {
+			ele := Ele{Row: row, Col: col, Text: tx.Text(), Rowspan: 1, Colspan: 1}
+			if rowspan, has := tx.Attr("rowspan"); has {
+				ele.Rowspan, _ = strconv.Atoi(rowspan)
 			}
+			if colspan, has := tx.Attr("colspan"); has {
+				ele.Colspan, _ = strconv.Atoi(colspan)
+			}
+			ele.Index = it.PushBack(&ele)
 		})
-		matrix[0] = rowOne
-	default:
-		matrix = make([][]*element, length)
-		trs.Each(func(row int, tr *goquery.Selection) {
-			tr.Children().Each(func(col int, tx *goquery.Selection) {
-				rowspanInt, colspanInt := 1, 1
-				c := tx2Content(tx)
-				if rowspan, has := tx.Attr("rowspan"); has {
-					rowspanInt, _ = strconv.Atoi(rowspan)
-				}
-				if colspan, has := tx.Attr("colspan"); has {
-					colspanInt, _ = strconv.Atoi(colspan)
-				}
-				for i := rowspanInt - 1; i >= 0; i-- {
-					it := row + i
-					for j := 0; j < colspanInt; j++ {
-						matrix[it] = append(matrix[it], c)
-					}
-				}
-			})
-		})
+		m = append(m, it)
+	})
+	for _, v := range m {
+		for head := v.Front(); head != nil; head = head.Next() {
+			ele := head.Value.(*Ele)
+			if ele.IsColspan() {
+				solveColspan(ele, &m)
+			}
+			if ele.IsRowspan() {
+				solveRowspan(ele, &m)
+			}
+		}
+	}
+	matrix = make([][]string, len(m))
+	for i := range m {
+		matrix[i] = make([]string, 0, m[i].Len())
+		for head := m[i].Front(); head != nil; head = head.Next() {
+			matrix[i] = append(matrix[i], strings.TrimSpace(head.Value.(*Ele).Text))
+		}
 	}
 	return
 }

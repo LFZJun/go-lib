@@ -57,7 +57,7 @@ func (c *coroutinePool) coroutineRun() {
 	}
 }
 
-func (c *coroutinePool) autoAdd() {
+func (c *coroutinePool) dispatch() {
 	for {
 		_, ok := <-c.auto
 		if !ok {
@@ -101,7 +101,7 @@ func initCoroutinePool(pool *coroutinePool) {
 		go pool.coroutineRun()
 	}
 	// 用一个goroutine维持任务分发
-	go pool.autoAdd()
+	go pool.dispatch()
 }
 
 func NewCoroutinePool(size int) CoroutinePool {

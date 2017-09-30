@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"testing"
+	"container/list"
 )
 
 var foo = `<html>
@@ -14,10 +15,10 @@ var foo = `<html>
     <tr>
         <td rowspan="2">one</td>
         <td>two</td>
-        <td>three</td>
+        <td rowspan="2">three</td>
     </tr>
     <tr>
-        <td colspan="2">February</td>
+        <td>February</td>
     </tr>
 </table>
 
@@ -36,4 +37,13 @@ func TestParseTable(t *testing.T) {
 	doc, _ := goquery.NewDocumentFromReader(bytes.NewReader([]byte(foo)))
 	table := doc.Find("table")
 	fmt.Println(ParseTable(table))
+}
+
+func TestInsert(t *testing.T) {
+	l := list.New()
+	insert(l, 0, 1)
+	insert(l, 1, 2)
+	for ele := l.Front();ele!=nil;ele = ele.Next() {
+		fmt.Println(ele.Value)
+	}
 }
