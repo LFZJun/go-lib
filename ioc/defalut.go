@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	logger           = log.New(os.Stdout, "[ioc] ", log.Lshortfile)
+	logger           = log.New(os.Stderr, "[ioc] ", log.Lshortfile)
 	defaultContainer = NewContainer()
 )
 

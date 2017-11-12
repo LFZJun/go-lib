@@ -12,7 +12,7 @@ import (
 var (
 	ExceedTime = errors.New("获取锁超时")
 	DelFail    = errors.New("redis出错")
-	Logger     = log.New(os.Stdout, "[mutex] ", log.Lshortfile)
+	Logger     = log.New(os.Stderr, "[mutex] ", log.Lshortfile)
 )
 
 type ReMutex struct {
