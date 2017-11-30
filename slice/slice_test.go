@@ -36,3 +36,19 @@ func TestFilter(t *testing.T) {
 	}
 	fmt.Println(srcFoo)
 }
+
+type poker []int
+
+func (p poker) Swap(i, j int) {
+	p[i], p[j] = p[j], p[i]
+}
+
+func (p poker) Len() int {
+	return len(p)
+}
+
+func TestShuffle(t *testing.T) {
+	var foo poker = []int{1, 2, 3, 4}
+	Shuffle(foo)
+	fmt.Println(foo)
+}
