@@ -11,10 +11,9 @@ type Poker interface {
 }
 
 func Shuffle(poker Poker) {
-	l := poker.Len()
 	src := rand.NewSource(time.Now().Unix())
 	r := rand.New(src)
-	for i := l; i > 0; {
+	for i := poker.Len(); i > 0; {
 		j := r.Intn(i)
 		i--
 		poker.Swap(i, j)

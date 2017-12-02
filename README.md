@@ -1,4 +1,7 @@
+# go-lib
+
 ## 目录
+
 1. [设计模式](gof)
     * [策略模式](gof/strategy)
     * [单例模式](gof/singleton)
@@ -18,6 +21,9 @@
     * [计算器](parser/calculator/)
     * [go tag](parser/tag/)
 1. [go slice通用方法](slice/)
+    * [filter](slice/filter.go)
+    * [groupby](slice/groupby.go)
+    * [shuffle](slice/shuffle.go)
 1. [数据结构与算法](algorithms/)
     * [环形队列](algorithms/queue)
     * [搜索](algorithms/search)
@@ -32,8 +38,9 @@
     * [cache](deprecated/cache/lowCache.go)[思考](deprecated/cache/README.md)
 
 ## 说明
-### 目录
-公共方法库
-### deprecated
-[deprecated](deprecated)里面包含了部分代码的不成熟实现
 
+公共方法库
+
+### deprecated
+
+[deprecated](deprecated)里面包含了部分代码的不成熟实现
