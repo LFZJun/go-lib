@@ -12,7 +12,7 @@ func TestNewCoroutinePool(t *testing.T) {
 	p := NewCoroutinePool(10)
 	for i := 0; i < 10; i++ {
 		p.Add(func() {
-			time.Sleep(time.Second)
+			<-time.After(time.Second)
 			fmt.Println(1)
 		})
 	}

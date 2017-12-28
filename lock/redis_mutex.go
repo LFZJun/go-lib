@@ -45,7 +45,7 @@ func (rm *ReMutex) Lock(var1 string) error {
 		if n > rm.Retry {
 			return ExceedTime
 		}
-		time.Sleep(time.Millisecond)
+		<-time.After(time.Microsecond)
 		n++
 	}
 	return nil
