@@ -1,7 +1,7 @@
 package cache
 
 import (
-	"github.com/LFZJun/go-lib/cache/timer"
+	"github.com/ljun20160606/go-lib/cache/timer"
 	"sync"
 	"time"
 )

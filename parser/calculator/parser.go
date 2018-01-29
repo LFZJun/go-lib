@@ -2,7 +2,7 @@ package calculator
 
 import (
 	"fmt"
-	"github.com/LFZJun/go-lib/algorithms/stack"
+	"github.com/ljun20160606/go-lib/algorithms/stack"
 	"math"
 	"strconv"
 )

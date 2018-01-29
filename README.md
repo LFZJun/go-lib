@@ -1,6 +1,6 @@
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/LFZJun/go-lib/blob/master/LICENSE)
-[![Build Status](https://travis-ci.org/LFZJun/go-lib.svg?branch=master)](https://travis-ci.org/LFZJun/go-lib)
-[![codecov](https://codecov.io/gh/LFZJun/go-lib/branch/master/graph/badge.svg)](https://codecov.io/gh/LFZJun/go-lib)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/ljun20160606/go-lib/blob/master/LICENSE)
+[![Build Status](https://travis-ci.org/ljun20160606/go-lib.svg?branch=master)](https://travis-ci.org/ljun20160606/go-lib)
+[![codecov](https://codecov.io/gh/ljun20160606/go-lib/branch/master/graph/badge.svg)](https://codecov.io/gh/ljun20160606/go-lib)
 
 # go-lib
 

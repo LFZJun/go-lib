@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/LFZJun/go-lib/cache/hashl"
+	"github.com/ljun20160606/go-lib/cache/hashl"
 )
 
 type (
