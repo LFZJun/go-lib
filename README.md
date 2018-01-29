@@ -1,3 +1,4 @@
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/LFZJun/go-lib/blob/master/LICENSE)
 [![Build Status](https://travis-ci.org/LFZJun/go-lib.svg?branch=master)](https://travis-ci.org/LFZJun/go-lib)
 [![codecov](https://codecov.io/gh/LFZJun/go-lib/branch/master/graph/badge.svg)](https://codecov.io/gh/LFZJun/go-lib)
 
