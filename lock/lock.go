@@ -1,4 +1,4 @@
-package main
+package lock
 
 type Mutex interface {
 	Lock(var1 string) error

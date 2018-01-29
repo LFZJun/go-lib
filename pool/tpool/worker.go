@@ -7,7 +7,7 @@ type (
 	}
 
 	Command func() error
-	Task func() Future
+	Task    func() Future
 )
 
 type (

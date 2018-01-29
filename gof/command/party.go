@@ -1,4 +1,4 @@
-package main
+package command
 
 type Party struct {
 	Commands []Command

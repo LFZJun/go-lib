@@ -1,10 +1,10 @@
 package htmlutil
 
 import (
+	"container/list"
 	"github.com/PuerkitoBio/goquery"
 	"strconv"
 	"strings"
-	"container/list"
 )
 
 type Ele struct {

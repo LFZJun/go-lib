@@ -1,10 +1,10 @@
-package main
+package lock
 
 import (
 	"log"
 	"os"
 
-	"gopkg.in/redis.v4"
+	"github.com/go-redis/redis"
 )
 
 var logger = log.New(os.Stderr, "[redis]", log.LstdFlags)

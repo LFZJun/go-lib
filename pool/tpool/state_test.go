@@ -1,8 +1,8 @@
 package tpool
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func TestSTATE(t *testing.T) {

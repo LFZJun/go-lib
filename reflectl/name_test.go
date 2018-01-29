@@ -2,7 +2,6 @@ package reflectl
 
 import (
 	"fmt"
-	"github.com/cocotyty/summer"
 	"testing"
 )
 

@@ -2,10 +2,10 @@ package htmlutil
 
 import (
 	"bytes"
+	"container/list"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"testing"
-	"container/list"
 )
 
 var foo = `<html>
@@ -43,7 +43,7 @@ func TestInsert(t *testing.T) {
 	l := list.New()
 	insert(l, 0, 1)
 	insert(l, 1, 2)
-	for ele := l.Front();ele!=nil;ele = ele.Next() {
+	for ele := l.Front(); ele != nil; ele = ele.Next() {
 		fmt.Println(ele.Value)
 	}
 }

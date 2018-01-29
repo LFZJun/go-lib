@@ -1,12 +1,11 @@
-package main
+package lock
 
 import (
 	"errors"
+	"github.com/go-redis/redis"
 	"log"
 	"os"
 	"time"
-
-	"gopkg.in/redis.v4"
 )
 
 var (

@@ -1,8 +1,6 @@
-package main
+package command
 
-import (
-	"qiniupkg.com/x/errors.v7"
-)
+import "errors"
 
 type RemoteControl struct {
 	commands    []Command

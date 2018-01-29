@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/LFZJun/go-lib.svg?branch=master)](https://travis-ci.org/LFZJun/go-lib)
+[![codecov](https://codecov.io/gh/LFZJun/go-lib/branch/master/graph/badge.svg)](https://codecov.io/gh/LFZJun/go-lib)
+
 # go-lib
 
 ## 目录

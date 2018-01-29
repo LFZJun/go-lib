@@ -5,7 +5,7 @@ const (
 	CAPACITY   = (1 << COUNT_BITS) - 1
 )
 const (
-	RUNNING    = (iota - 1) << COUNT_BITS
+	RUNNING = (iota - 1) << COUNT_BITS
 	SHUTDOWN
 	STOP
 	TIDYING

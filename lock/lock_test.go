@@ -1,4 +1,4 @@
-package main
+package lock
 
 import (
 	"fmt"
@@ -8,6 +8,7 @@ import (
 )
 
 func TestName(t *testing.T) {
+	t.Skip()
 	mutex := NewReMutex(NewRedis(RedisUser{Address: "127.0.0.1:6379"}), time.Minute, 100)
 	group := sync.WaitGroup{}
 	mutex.Unlock("ljun")
