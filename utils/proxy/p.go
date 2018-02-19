@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 )
 
 var Port = ":8080"
@@ -23,7 +24,7 @@ func Show() {
 	server.Tr.Proxy = nil
 	server.Tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	server.OnRequest().DoFunc(func(req *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Response) {
-		var b bytes.Buffer
+		var b strings.Builder
 		b.WriteString(sp)
 		// first line
 		b.WriteString(fmt.Sprintf("%v %v %v\n", req.Method, req.URL.Path, req.Proto))
@@ -56,7 +57,7 @@ func Show() {
 		b.WriteByte('\n')
 		b.WriteString(sp)
 		fmt.Println(b.String())
-		req.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+		req.Body = ioutil.NopCloser(bytes.NewReader(body))
 		return req, nil
 	})
 	err := http.ListenAndServe(Port, server)
