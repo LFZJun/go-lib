@@ -6,15 +6,15 @@ import (
 )
 
 func TestNewTrieNode(t *testing.T) {
-	tn := newSimpleTrieNode()
+	tn := NewNaiveTrie()
 	fmt.Println(len(tn.Children) == 128)
 }
 
 func TestNewSimpleTrie(t *testing.T) {
-	simpleTrie := NewSimpleTrie()
-	simpleTrie.InsertRoot("foo")
-	simpleTrie.InsertRoot("foz")
-	simpleTrie.InsertRoot("fzz")
-	result := simpleTrie.FuzzySearch("fo")
+	naiveTrie := NewNaiveTrie()
+	naiveTrie.Insert("foo")
+	naiveTrie.Insert("foz")
+	naiveTrie.Insert("fzz")
+	result := naiveTrie.PrefixSearch("fo")
 	fmt.Println(result)
 }
