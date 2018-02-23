@@ -1,4 +1,4 @@
-package sort
+package mysort
 
 func merge(left, right []int) (result []int) {
 	l, r := 0, 0

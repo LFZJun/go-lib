@@ -1,11 +1,11 @@
-package sort
+package mysort
 
 func quickSortV1(l []int) []int {
 	if len(l) < 2 {
 		return l
 	}
 	pivot := l[0]
-	low, equal, high := []int{}, []int{}, []int{}
+	var low, equal, high []int
 	for _, v := range l {
 		if v < pivot {
 			low = append(low, v)
