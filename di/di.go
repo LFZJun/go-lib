@@ -1,4 +1,4 @@
-package ioc
+package di
 
 import (
 	"log"
@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	logger           = log.New(os.Stderr, "[ioc] ", log.Lshortfile)
+	logger           = log.New(os.Stderr, "[di] ", log.Lshortfile)
 	defaultContainer = NewContainer()
 )
 

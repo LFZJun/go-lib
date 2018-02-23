@@ -1,4 +1,4 @@
-package ioc
+package di
 
 import (
 	"reflect"
@@ -38,7 +38,7 @@ func (c *Cup) injectDependency() {
 	for num := valueElem.NumField() - 1; num >= 0; num-- {
 		classInfo := classElem.Field(num)
 		value := valueElem.Field(num)
-		tag, ok := classInfo.Tag.Lookup("ioc")
+		tag, ok := classInfo.Tag.Lookup("di")
 		if !ok || tag == "-" {
 			continue
 		}

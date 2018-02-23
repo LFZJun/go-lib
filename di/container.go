@@ -1,4 +1,4 @@
-package ioc
+package di
 
 import (
 	"reflect"
@@ -44,9 +44,6 @@ type (
 
 		// 开始根据生命周期初始化
 		Start()
-	}
-
-	containPlugin interface {
 	}
 
 	container struct {
@@ -140,7 +137,6 @@ func (c *container) GetCup(t reflect.Type, excludedNames ...string) (h *Cup) {
 	case 1:
 		c.EachCup(func(name string, cup *Cup) bool {
 			if name != excludedNames[0] {
-				fmt.Println(t, cup.Class)
 				if reflectl.TypeEqual(t, cup.Class) {
 					h = cup
 					return true

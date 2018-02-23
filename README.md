@@ -18,9 +18,9 @@
     * [ccache](cache/ccache.go)
 1. [池](pool)
     * [连接池](pool/conncet-pool.go) (不能存map，因为复用的时候不会删除entry)
-    * [协程池](pool/coroutine-pool.go) (只实现了size，没实现min, max，凑活用，hhh)
+    * [协程池](pool/coroutine-pool.go) (只实现了size，没实现min, max)
 1. [分布式锁](lock/redis_mutex.go) (redis实现)
-1. [ioc](ioc)
+1. [依赖注入](di/di.go)
 1. [编译原理前端](parser)
     * [计算器](parser/calculator/)
     * [go tag](parser/tag/)
@@ -38,13 +38,7 @@
         * [归并排序](algorithms/sort/merge_sort.go)
         * [快速排序](algorithms/sort/quick_sort.go)
     * [编辑距离](algorithms/levenshtein/)
-1. [deprecated](deprecated)
-    * [cache](deprecated/cache/lowCache.go)[思考](deprecated/cache/README.md)
 
 ## 说明
 
 公共方法库
-
-### deprecated
-
-[deprecated](deprecated)里面包含了部分代码的不成熟实现

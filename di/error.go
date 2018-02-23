@@ -1,11 +1,11 @@
-package ioc
+package di
 
 import "fmt"
 
-type errorIoc int
+type errorDi int
 
 const (
-	ErrorType errorIoc = iota
+	ErrorType errorDi = iota
 	ErrorMissing
 	ErrorUnexported
 	ErrorTagDotIndex
@@ -20,14 +20,14 @@ var errorString = [...]string{
 	ErrorStopIterator: "停止循环",
 }
 
-func (e errorIoc) String() string {
+func (e errorDi) String() string {
 	return errorString[e]
 }
 
-func (e errorIoc) Error() string {
+func (e errorDi) Error() string {
 	return errorString[e]
 }
 
-func (e errorIoc) Panic(argv ...interface{}) string {
+func (e errorDi) Panic(argv ...interface{}) string {
 	return fmt.Sprintf(e.String(), argv...)
 }

@@ -1,4 +1,4 @@
-package ioc
+package di
 
 import (
 	"github.com/ljun20160606/go-lib/reflectl"
