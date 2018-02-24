@@ -20,7 +20,6 @@
     * [连接池](pool/conncet-pool.go) (不能存map，因为复用的时候不会删除entry)
     * [协程池](pool/coroutine-pool.go) (只实现了size，没实现min, max)
 1. [分布式锁](lock/redis_mutex.go) (redis实现)
-1. [依赖注入](di/di.go)
 1. [编译原理前端](parser)
     * [计算器](parser/calculator/)
     * [go tag](parser/tag/)
