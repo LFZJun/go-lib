@@ -1,10 +1,10 @@
 package reflectl
 
 import (
-	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestName(t *testing.T) {
-	fmt.Println(GetInterfaceDefaultName(1))
+	assert.Equal(t, "int", GetInterfaceDefaultName(1))
 }

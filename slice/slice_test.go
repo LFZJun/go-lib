@@ -1,7 +1,7 @@
 package slice
 
 import (
-	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -16,11 +16,8 @@ func TestGroupBy(t *testing.T) {
 		return h.(foo).Id
 	}
 	err := GroupBy(&srcFoo, hashFunc)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(srcFoo)
+	assert.NoError(t, err)
+	assert.Equal(t, []foo{{1, 1}}, srcFoo)
 }
 
 func TestFilter(t *testing.T) {
@@ -30,11 +27,8 @@ func TestFilter(t *testing.T) {
 		return t.Value < 4
 	}
 	err := Filter(&srcFoo, filterFunc)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(srcFoo)
+	assert.NoError(t, err)
+	assert.Equal(t, []foo{{1, 1}, {1, 3}}, srcFoo)
 }
 
 type poker []int
@@ -49,6 +43,7 @@ func (p poker) Len() int {
 
 func TestShuffle(t *testing.T) {
 	var foo poker = []int{1, 2, 3, 4}
-	Shuffle(foo)
-	fmt.Println(foo)
+	assert.NotPanics(t, func() {
+		Shuffle(foo)
+	})
 }
